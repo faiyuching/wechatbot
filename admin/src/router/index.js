@@ -42,17 +42,17 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: '仪表盘', icon: 'dashboard' }
-    }]
-  },
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   redirect: '/dashboard',
+  //   children: [{
+  //     path: 'dashboard',
+  //     name: 'Dashboard',
+  //     component: () => import('@/views/dashboard/index'),
+  //     meta: { title: '仪表盘', icon: 'dashboard' }
+  //   }]
+  // },
   {
     path: '/profile',
     component: Layout,
@@ -137,33 +137,33 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/material',
-    component: Layout,
-    redirect: '/material/text',
-    name: 'Material',
-    meta: { title: '素材中心', icon: 'material' },
-    children: [
-      {
-        path: 'text',
-        name: 'MaterialText',
-        component: () => import('@/views/material/material-text'),
-        meta: { title: '文本素材', icon: 'text' }
-      },
-      {
-        path: 'file',
-        name: 'MaterialFile',
-        component: () => import('@/views/material/material-file'),
-        meta: { title: '文件素材', icon: 'file' }
-      },
-    ]
-  },
+  // {
+  //   path: '/material',
+  //   component: Layout,
+  //   redirect: '/material/text',
+  //   name: 'Material',
+  //   meta: { title: '素材中心', icon: 'material' },
+  //   children: [
+  //     {
+  //       path: 'text',
+  //       name: 'MaterialText',
+  //       component: () => import('@/views/material/material-text'),
+  //       meta: { title: '文本素材', icon: 'text' }
+  //     },
+  //     {
+  //       path: 'file',
+  //       name: 'MaterialFile',
+  //       component: () => import('@/views/material/material-file'),
+  //       meta: { title: '文件素材', icon: 'file' }
+  //     },
+  //   ]
+  // },
   {
     path: '/project-home',
     component: Layout,
     children: [
       {
-        path: 'https://github.com/metanoia1989/wechatbot',
+        path: 'https://gitee.com/yuqing17/wechatbot',
         meta: { title: '项目主页', icon: 'link' }
       }
     ]
