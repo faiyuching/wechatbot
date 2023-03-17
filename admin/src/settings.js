@@ -34,6 +34,14 @@ module.exports = {
     "set-group-welcome": "设置群组欢迎语",
     "reting-record-stats": "借阅统计图表",
     "the-day-all-rent-stats": "当日所有借阅统计" ,
-  }
+  },
+  /**
+   * 消息管理页面数据
+   */
+  informationTypes: {
+    1: "文字",
+    2: "图文",
+    3: "入群邀请",
+  },
 
 }

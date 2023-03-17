@@ -79,6 +79,17 @@ export const constantRoutes = [
     }]
   },
   {
+    path: '/information',
+    component: Layout,
+    redirect: '/information/index',
+    children: [{
+      path: 'index',
+      name: 'InformationList',
+      component: () => import('@/views/information/information-list'),
+      meta: { title: '消息管理', icon: 'information-list' }
+    }]
+  },
+  {
     path: '/keyword',
     component: Layout,
     redirect: '/keyword/index',
