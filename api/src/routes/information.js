@@ -1,0 +1,10 @@
+import * as express from "express";
+import * as informationController from "../controllers/information.js";
+import auth from "../util/auth.js";
+const router = express.Router();
+router.get('/listInformation', auth.required, informationController.validate.listInformation, informationController.listInformation);
+router.get('/findInformation', auth.required, informationController.validate.findInformation, informationController.findInformation);
+router.post('/saveInformation', auth.required, informationController.validate.saveInformation, informationController.saveInformation);
+router.post('/updateInformation', auth.required, informationController.validate.updateInformation, informationController.updateInformation);
+router.post('/deleteInformation', auth.required, informationController.validate.deleteInformation, informationController.deleteInformation);
+export default router;

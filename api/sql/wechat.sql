@@ -218,6 +218,21 @@ ADD COLUMN `scope` ENUM('all', 'group', 'personal')
 DEFAULT 'all' COMMENT '生效范围 all 全部 group 仅群组 personal 仅个人'
 AFTER `event`;
 
+--- 消息表，用 tab 来展示不同类型的关键词
+CREATE TABLE `ts_wechat_information` (
+	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`title` VARCHAR(255) NOT NULL COMMENT '标题',
+	`type` TINYINT(1) DEFAULT 1 COMMENT '消息类型  1文字 2图文 3入群邀请',
+	`reply` VARCHAR(255) NULL COMMENT '回复内容' COLLATE 'utf8mb4_general_ci',
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+	`updated_at` TIMESTAMP NULL COMMENT '更新时间',
+	PRIMARY KEY (`id`),
+	UNIQUE INDEX `title` (`title`)
+)
+ENGINE=InnoDB
+COLLATE='utf8_general_ci'
+COMMENT='消息表';
+
 --- 好友欢迎语表
 CREATE TABLE `ts_wechat_friend_welcome` (
 	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,

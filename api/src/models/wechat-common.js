@@ -93,9 +93,51 @@ const WechatKeyword = db.define('WechatKeyword', {
         }
     ],
 });
+/**
+ * 消息
+ */
+const WechatInformation = db.define('WechatInformation', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    type: {
+        type: DataTypes.ENUM,
+        values: [1, 2, 3],
+        defaultValue: 1,
+    },
+    reply: {
+        type: DataTypes.STRING,
+    },
+    created_at: {
+        type: DataTypes.DATE,
+    },
+    updated_at: {
+        type: DataTypes.DATE,
+    },
+}, {
+    tableName: 'wechat_information',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    indexes: [
+        {
+            name: 'title',
+            unique: true,
+            fields: ['title']
+        }
+    ],
+});
 export { WechatRoom };
 export { WechatKeyword };
+export { WechatInformation };
 export default {
     WechatRoom,
-    WechatKeyword
+    WechatKeyword,
+    WechatInformation
 };
