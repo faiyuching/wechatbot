@@ -29,7 +29,7 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="标题" min-width="100px">
+      <el-table-column label="标题" min-width="75px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
         </template>
@@ -39,23 +39,16 @@
           <span class="">{{ types[row.type] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="标签" min-width="50px" align="left">
+      <el-table-column label="标签" min-width="100px" align="left">
         <template slot-scope="{row}">
-          <span class="">{{ types[row.tag] }}</span>
+          <el-tag v-for="item in row.tags" v-bind:key="item.id">{{ item.value }}</el-tag>
         </template>
       </el-table-column>
-      <!-- <el-table-column label="内容" min-width="110px" align="left">
-        <template slot-scope="{row}">
-          <el-tooltip :content="row.reply" placement="bottom" popper-class="fix-width-tooltip">
-            <span>{{ row.reply | strSlice(50) }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column> -->
-      <el-table-column label="添加时间" min-width="180px" align="left">
+      <!-- <el-table-column label="添加时间" min-width="75px" align="left">
         <template slot-scope="{row}">
           <p class="link-desc">{{ row.created_at }}</p>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -269,6 +262,8 @@ export default {
       margin: 5px 0;
     }
   }
-
+}
+.el-tag + .el-tag {
+  margin-left: 10px;
 }
 </style>

@@ -29,8 +29,13 @@
             <el-form-item label="内容">
               <el-input v-model="temp.reply" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入内容" />
             </el-form-item>
+            <el-form-item label="标签">
+							<el-autocomplete v-if="inputVisible" size="small" v-model="inputValue" ref="saveTagInput" :fetch-suggestions="querySearch" placeholder="请选择或输入标签" @select="handleSelect" @change="handleChange"></el-autocomplete>
+							<el-button v-else size="small" @click="showInput">+ 添加标签</el-button>
+							<br>
+							<el-tag :key="tag.id" v-for="tag in temp.tags" closable  @close="handleClose(tag)">{{tag.value}}</el-tag>
+            </el-form-item>
           </el-form>
-
         </div>
 
         <div class="handle-bar">
@@ -48,8 +53,10 @@
 
 <script>
 import { fetchInformation, updateInformation, createInformation } from '@/api/information'
+import { fetchTagList, createTag } from '@/api/tag'
 import CreateView from '../../../components/CreateView.vue'
 import settings from '@/settings'
+import { thisExpression } from '@babel/types'
 
 export default {
   components: { CreateView },
@@ -86,22 +93,95 @@ export default {
         reply: undefined,
         event: undefined,
         status: true,
+        tags: [],
       },
+      allTags: [],
+			addTag: {
+				value: ''
+			},
       loading: false,
       types: settings.informationTypes,
+			inputVisible: false,
+			inputValue: '',
     }
   },
   created() {
     this.getInformation()
   },
   methods: {
+		handleChange(){
+			this.addTag.value = this.inputValue
+			createTag(this.addTag).then((res) => {
+				this.$notify({
+					title: 'Success',
+					message: '创建标签成功',
+					type: 'success',
+					duration: 2000
+				})
+				this.temp.tags.push(res.data)
+				this.allTags.push(res.data)
+			}).catch(() => {
+				this.$notify({
+					title: 'Error',
+					message: '创建标签失败',
+					type: 'error',
+					duration: 2000
+				})
+			})
+			this.inputVisible = false;
+			this.inputValue = '';
+		},
+		handleSelect(item) {
+			if (this.temp.tags.findIndex((tag)=>{return tag.id===item.id})==-1) {
+				this.temp.tags.push(item)
+			}else{
+				this.$notify({
+					title: 'Error',
+					message: '已存在此标签',
+					type: 'error',
+					duration: 2000
+				})
+			}
+			this.inputVisible = false;
+			this.inputValue = '';
+		},
+		querySearch(queryString, cb) {
+			var tags = this.allTags;
+			var results = queryString ? tags.filter(this.createFilter(queryString)) : tags;
+			// 调用 callback 返回建议列表的数据
+			cb(results);
+		},
+		createFilter(queryString) {
+			return (tag) => {
+				return (tag.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+			};
+		},
+		handleClose(tag) {
+        this.temp.tags.splice(this.temp.tags.indexOf(tag), 1);
+      },
+		showInput() {
+			this.inputVisible = true;
+			this.$nextTick(_ => {
+				this.$refs.saveTagInput.$refs.input.focus();
+			});
+		},
     getInformation() {
-      if (this.action.type == 'update') {
-        this.loading = true
+			this.loading = true
+      fetchTagList().then(res => {
+        this.allTags = res.data.items
+				this.loading = false
+      }).catch(() => {
+				this.loading = false
+			})
+			if (this.action.type == 'update') {
+				this.loading = true
         var id = this.action.id
         fetchInformation(id).then(res => {
-          this.temp = res.data
-          this.loading = false
+					this.temp = res.data
+					this.allTags = this.allTags.filter((item) =>
+						!res.data.tags.some((ele) => ele.id === item.id)
+					);
+					this.loading = false
         }).catch(() => {
           this.loading = false
         })
@@ -145,7 +225,6 @@ export default {
         }
       })
     },
-
   }
 }
 </script>
@@ -185,6 +264,9 @@ export default {
     margin-top: 5px;
     margin-right: 20px;
   }
+}
+.el-tag{
+  margin-right: 10px;
 }
 
 </style>
