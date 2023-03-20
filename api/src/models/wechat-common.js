@@ -133,11 +133,81 @@ const WechatInformation = db.define('WechatInformation', {
         }
     ],
 });
+/**
+ * 标签
+ */
+const WechatTag = db.define('WechatTag', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
+    value: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    created_at: {
+        type: DataTypes.DATE,
+    },
+    updated_at: {
+        type: DataTypes.DATE,
+    },
+}, {
+    tableName: 'wechat_tag',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    indexes: [
+        {
+            name: 'value',
+            unique: true,
+            fields: ['value']
+        }
+    ],
+});
+/**
+ * 消息与标签关联表
+ */
+const WechatInformationTag = db.define('WechatInformationTag', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
+    information_id: {
+        type: DataTypes.INTEGER,
+    },
+    tag_id: {
+        type: DataTypes.INTEGER,
+    },
+    created_at: {
+        type: DataTypes.DATE,
+    },
+    updated_at: {
+        type: DataTypes.DATE,
+    },
+}, {
+    tableName: 'wechat_information_tag',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    indexes: [
+        {
+            name: 'information_tag_id',
+            unique: true,
+            fields: ['information_id','tag_id']
+        }
+    ],
+});
 export { WechatRoom };
 export { WechatKeyword };
 export { WechatInformation };
+export { WechatTag };
+export { WechatInformationTag };
 export default {
     WechatRoom,
     WechatKeyword,
-    WechatInformation
+    WechatInformation,
+    WechatTag,
+    WechatInformationTag
 };

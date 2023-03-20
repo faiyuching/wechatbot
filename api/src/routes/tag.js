@@ -1,0 +1,10 @@
+import * as express from "express";
+import * as tagController from "../controllers/tag.js";
+import auth from "../util/auth.js";
+const router = express.Router();
+router.get('/listTag', auth.required, tagController.validate.listTag, tagController.listTag);
+router.get('/findTag', auth.required, tagController.validate.findTag, tagController.findTag);
+router.post('/saveTag', auth.required, tagController.validate.saveTag, tagController.saveTag);
+router.post('/updateTag', auth.required, tagController.validate.updateTag, tagController.updateTag);
+router.post('/deleteTag', auth.required, tagController.validate.deleteTag, tagController.deleteTag);
+export default router;

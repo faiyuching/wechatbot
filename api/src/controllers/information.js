@@ -1,7 +1,7 @@
 import Bot from "../bot.js";
 import * as expressValidator from "express-validator";
 import { res_data } from "../util/server.js";
-import { WechatInformation } from "../models/wechat-common.js";
+import { WechatInformation, WechatInformationTag, WechatTag } from "../models/wechat-common.js";
 import { Op } from "sequelize";
 import { processKeyword } from "../util/wechat.js";
 const { body, validationResult, oneOf, query } = expressValidator;
@@ -62,6 +62,17 @@ export const listInformation = async (req, res, next) => {
         });
         items = items.map(processKeyword);
         var total = await WechatInformation.count({ where });
+        for(var i = 0; i < items.length; i++){
+            let where = {};
+            where.information_id = items[i].id;
+            var rels = await WechatInformationTag.findAll({ where });
+            var tags = []
+            for(var j = 0; j < rels.length; j++){
+                var tag = await WechatTag.findByPk(rels[j].tag_id);
+                tags.push(tag)
+            }
+            items[i].dataValues.tags = tags
+        }
         var data = { items, total };
     }
     catch (error) {
@@ -78,6 +89,15 @@ export const findInformation = async (req, res, next) => {
         var data = await WechatInformation.findByPk(req.query.id);
         if (data)
             data = processKeyword(data);
+        let where = {};
+        where.information_id = req.query.id;
+        var rels = await WechatInformationTag.findAll({ where });
+        var tags = []
+        for(var i = 0; i < rels.length; i++){
+            var tag = await WechatTag.findByPk(rels[i].tag_id);
+            tags.push(tag)
+        }
+        data.dataValues.tags = tags
     }
     catch (error) {
         return res.json(res_data(null, -1, error.toString()));
@@ -97,7 +117,12 @@ export const saveInformation = async (req, res, next) => {
         return res.json(res_data(null, -1, "添加失败，已存在此标题!"));
     }
     try {
-        await WechatInformation.create(req.body);
+        var information = await WechatInformation.create(req.body);
+        var information_id = information.id;
+        for(let i = 0; i < req.body.tags.length; i++){
+            var tag_id = req.body.tags[i].id;
+            await WechatInformationTag.create({ information_id, tag_id });
+        }
     }
     catch (error) {
         return res.json(res_data(null, -1, error.toString()));
@@ -112,18 +137,25 @@ export const updateInformation = async (req, res, next) => {
     var where = {};
     if (typeof req.body.id != "undefined") {
         where.id = req.body.id;
-        delete req.body.id;
     }
     else {
         where.title = req.body.title;
-        delete req.body.title;
     }
     try {
         await WechatInformation.update({ ...req.body }, { where });
+        var information_id = req.body.id
+        where = {}
+        where.information_id = information_id
+        await WechatInformationTag.destroy({ where });
+        for(let i = 0; i < req.body.tags.length; i++){
+            var tag_id = req.body.tags[i].id;
+            await WechatInformationTag.create({ information_id, tag_id });
+        }
     }
     catch (error) {
         return res.json(res_data(null, -1, error.toString()));
     }
+
     return res.json(res_data());
 };
 export const deleteInformation = async (req, res, next) => {
@@ -131,20 +163,27 @@ export const deleteInformation = async (req, res, next) => {
     if (!errors.isEmpty()) {
         return res.json(res_data(null, -1, errors.errors[0].msg));
     }
-    // if (req.body.id && req.body.id == 1) {
-    //     return res.json(res_data(null, -1, "默认关键词不允许删除"));
-    // }
     var where = {};
     if (typeof req.body.id != "undefined") {
         where.id = req.body.id;
-        delete req.body.id;
-    }
-    else {
-        where.title = req.body.title;
-        delete req.body.title;
     }
     try {
         await WechatInformation.destroy({ where });
+        where = {}
+        where.information_id = req.body.id
+        var infoRels = await WechatInformationTag.findAll({ where });
+        await WechatInformationTag.destroy({ where });
+        for(var i = 0; i < infoRels.length; i++){
+            where = {}
+            where.tag_id = infoRels[i].tag_id
+            var tagRels = await WechatInformationTag.findAll({ where });
+            console.log(tagRels.length)
+            if(tagRels.length == 0){
+                where = {}
+                where.id = infoRels[i].tag_id
+                await WechatTag.destroy({ where });
+            }
+        }
     }
     catch (error) {
         return res.json(res_data(null, -1, error.toString()));
