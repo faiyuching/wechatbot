@@ -29,9 +29,9 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="标题" min-width="75px">
+      <el-table-column label="名称" min-width="75px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="类别" min-width="50px" align="left">
