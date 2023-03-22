@@ -102,7 +102,7 @@ const WechatInformation = db.define('WechatInformation', {
         primaryKey: true,
         autoIncrement: true,
     },
-    title: {
+    name: {
         type: DataTypes.STRING,
         allowNull: false,
     },
@@ -112,7 +112,7 @@ const WechatInformation = db.define('WechatInformation', {
         defaultValue: 1,
     },
     reply: {
-        type: DataTypes.STRING,
+        type: DataTypes.JSON,
     },
     created_at: {
         type: DataTypes.DATE,
@@ -127,9 +127,9 @@ const WechatInformation = db.define('WechatInformation', {
     updatedAt: 'updated_at',
     indexes: [
         {
-            name: 'title',
+            name: 'name',
             unique: true,
-            fields: ['title']
+            fields: ['name']
         }
     ],
 });

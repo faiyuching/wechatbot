@@ -22,20 +22,20 @@ export const validate = {
         query('keyword').optional({ nullable: true }).notEmpty(),
     ],
     saveInformation: [
-        body('title').notEmpty().exists().withMessage('标题不能为空！'),
+        body('name').notEmpty().exists().withMessage('名称不能为空！'),
         ...informationOption,
     ],
     updateInformation: [
         oneOf([
             body('id', 'ID必须为整数！').exists().isInt(),
-            body('title').notEmpty().exists().withMessage('标题不能为空！'),
+            body('name').notEmpty().exists().withMessage('名称不能为空！'),
         ]),
         ...informationOption,
     ],
     deleteInformation: [
         oneOf([
             body('id', 'ID必须为整数！').exists().isInt(),
-            body('title').notEmpty().exists().withMessage('标题不能为空！'),
+            body('name').notEmpty().exists().withMessage('名称不能为空！'),
         ]),
     ],
 };
@@ -49,7 +49,7 @@ export const listInformation = async (req, res, next) => {
         where.id = req.query.id;
     }
     else if (req.query.keyword) {
-        where.title = {
+        where.name = {
             [Op.substring]: req.query.keyword
         };
     }
@@ -109,12 +109,12 @@ export const saveInformation = async (req, res, next) => {
     if (!errors.isEmpty()) {
         return res.json(res_data(errors, -1, errors.errors[0].msg));
     }
-    var title = req.body.title;
-    var titleRow = await WechatInformation.findOne({
-        where: { title }
+    var name = req.body.name;
+    var nameRow = await WechatInformation.findOne({
+        where: { name }
     });
-    if (titleRow) {
-        return res.json(res_data(null, -1, "添加失败，已存在此标题!"));
+    if (nameRow) {
+        return res.json(res_data(null, -1, "添加失败，已存在此名称!"));
     }
     try {
         var information = await WechatInformation.create(req.body);
@@ -139,7 +139,7 @@ export const updateInformation = async (req, res, next) => {
         where.id = req.body.id;
     }
     else {
-        where.title = req.body.title;
+        where.name = req.body.name;
     }
     try {
         await WechatInformation.update({ ...req.body }, { where });
