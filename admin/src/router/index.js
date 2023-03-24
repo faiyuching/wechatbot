@@ -36,7 +36,6 @@ export const constantRoutes = [
     component: () => import('@/views/login/index'),
     hidden: true
   },
-
   {
     path: '/404',
     component: () => import('@/views/404'),
@@ -90,85 +89,133 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/keyword',
+    path: '/behavior',
     component: Layout,
-    redirect: '/keyword/index',
-    children: [{
-      path: 'index',
-      name: 'KeywordList',
-      component: () => import('@/views/keyword/keyword-list'),
-      meta: { title: '关键词回复', icon: 'keyword-list' }
-    }]
+    redirect: '/behavior/auto-reply',
+    name: 'Behavior',
+    meta: { title: '行为管理', icon: 'material' },
+    children: [
+      {
+        path: 'auto-reply',
+        name: 'AutoReply',
+        component: () => import('@/views/keyword/keyword-list'),
+        meta: { title: '自动回复', icon: 'keyword-list' }
+      },
+      {
+        path: 'contact-welcome',
+        name: 'ContactWelcome',
+        component: () => import('@/views/contact/contact-welcome'),
+        meta: { title: '好友欢迎', icon: 'friend-welcome' }
+      },
+      {
+        path: 'group-welcome',
+        name: 'GroupWelcome',
+        component: () => import('@/views/group/group-welcome'),
+        meta: { title: '入群欢迎', icon: 'friend-welcome' }
+      }
+    ]
   },
   {
     path: '/contact',
     component: Layout,
     redirect: '/contact/index',
     name: 'Contact',
-    meta: { title: '联系人管理', icon: 'contact-manage' },
+    meta: { title: '通讯录', icon: 'contact-manage' },
     children: [
       {
         path: 'index',
         name: 'ContactList',
         component: () => import('@/views/contact/contact-list'),
-        meta: { title: '联系人列表', icon: 'contact-list' }
+        meta: { title: '联系人', icon: 'contact-list' }
       },
       {
-        path: 'welcome',
-        name: 'ContactWelcome',
-        component: () => import('@/views/contact/contact-welcome'),
-        meta: { title: '好友欢迎语', icon: 'friend-welcome' }
-      },
-      {
-        path: 'daily',
-        name: 'ContactDaily',
-        component: () => import('@/views/contact/contact-daily'),
-        meta: { title: '每日资讯', icon: 'daily' }
-      }
-    ]
-  },
-  {
-    path: '/group',
-    component: Layout,
-    redirect: '/group/index',
-    name: 'Group',
-    meta: { title: '群组管理', icon: 'asset-manage-grey' },
-    children: [
-      {
-        path: 'index',
+        path: 'group',
         name: 'GroupList',
         component: () => import('@/views/group/group-list'),
-        meta: { title: '群列表', icon: 'room' }
-      },
-      {
-        path: 'welcome',
-        name: 'GroupWelcome',
-        component: () => import('@/views/group/group-welcome'),
-        meta: { title: '欢迎语', icon: 'keyword' }
-      }
-    ]
-  },
-  {
-    path: '/material',
-    component: Layout,
-    redirect: '/material/text',
-    name: 'Material',
-    meta: { title: '素材中心', icon: 'material' },
-    children: [
-      {
-        path: 'text',
-        name: 'MaterialText',
-        component: () => import('@/views/material/material-text'),
-        meta: { title: '文本素材', icon: 'text' }
-      },
-      {
-        path: 'file',
-        name: 'MaterialFile',
-        component: () => import('@/views/material/material-file'),
-        meta: { title: '文件素材', icon: 'file' }
+        meta: { title: '微信群', icon: 'room' }
       },
     ]
   },
+  // {
+  //   path: '/keyword',
+  //   component: Layout,
+  //   redirect: '/keyword/index',
+  //   children: [{
+  //     path: 'index',
+  //     name: 'KeywordList',
+  //     component: () => import('@/views/keyword/keyword-list'),
+  //     meta: { title: '关键词回复', icon: 'keyword-list' }
+  //   }]
+  // },
+  // {
+  //   path: '/contact',
+  //   component: Layout,
+  //   redirect: '/contact/index',
+  //   name: 'Contact',
+  //   meta: { title: '联系人管理', icon: 'contact-manage' },
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'ContactList',
+  //       component: () => import('@/views/contact/contact-list'),
+  //       meta: { title: '联系人列表', icon: 'contact-list' }
+  //     },
+  //     {
+  //       path: 'welcome',
+  //       name: 'ContactWelcome',
+  //       component: () => import('@/views/contact/contact-welcome'),
+  //       meta: { title: '好友欢迎语', icon: 'friend-welcome' }
+  //     },
+  //     {
+  //       path: 'daily',
+  //       name: 'ContactDaily',
+  //       component: () => import('@/views/contact/contact-daily'),
+  //       meta: { title: '每日资讯', icon: 'daily' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/group',
+  //   component: Layout,
+  //   redirect: '/group/index',
+  //   name: 'Group',
+  //   meta: { title: '群组管理', icon: 'asset-manage-grey' },
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'GroupList',
+  //       component: () => import('@/views/group/group-list'),
+  //       meta: { title: '群列表', icon: 'room' }
+  //     },
+  //     {
+  //       path: 'welcome',
+  //       name: 'GroupWelcome',
+  //       component: () => import('@/views/group/group-welcome'),
+  //       meta: { title: '入群欢迎语', icon: 'keyword' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/material',
+  //   component: Layout,
+  //   redirect: '/material/text',
+  //   name: 'Material',
+  //   meta: { title: '素材中心', icon: 'material' },
+  //   children: [
+  //     {
+  //       path: 'text',
+  //       name: 'MaterialText',
+  //       component: () => import('@/views/material/material-text'),
+  //       meta: { title: '文本素材', icon: 'text' }
+  //     },
+  //     {
+  //       path: 'file',
+  //       name: 'MaterialFile',
+  //       component: () => import('@/views/material/material-file'),
+  //       meta: { title: '文件素材', icon: 'file' }
+  //     },
+  //   ]
+  // },
   {
     path: '/project-home',
     component: Layout,

@@ -7,6 +7,7 @@ import { processContact } from "../util/wechat.js";
  */
 async function initAllRoomData() {
     var items = await Bot.getInstance().Room.findAll();
+    console.log(items)
     try {
         var data = items.map(room => {
             let { payload } = room;
