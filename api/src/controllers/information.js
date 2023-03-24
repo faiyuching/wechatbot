@@ -1,16 +1,51 @@
 import Bot from "../bot.js";
 import * as expressValidator from "express-validator";
-import { res_data } from "../util/server.js";
+import { res_data, fileMd5, detectiveTypeByFileMime, getImageSize } from "../util/server.js";
 import { WechatInformation, WechatInformationTag, WechatTag } from "../models/wechat-common.js";
+import { WechatFile } from "../models/wechat.js";
 import { Op } from "sequelize";
 import { processKeyword } from "../util/wechat.js";
 const { body, validationResult, oneOf, query } = expressValidator;
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import config from '../config.js';
 const informationOption = [
     body('type').optional({ nullable: true }).isIn([1, 2, 3]),
     body('reply').optional({ nullable: true }),
     // body('event').optional({ nullable: true }),
     // body('status').optional({ nullable: true }).isIn([0, 1, true, false]),
 ];
+// 文件上传初始化参数
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, config.__dirname + '/public/uploads/');
+    },
+    filename: (req, file, cb) => {
+        const ext = (file.originalname).split('.').pop();
+        const prefix = file.originalname.substring(0, file.originalname.length - ext.length - 1);
+        const filename = prefix + '-' + Date.now() + "." + ext;
+        cb(null, filename);
+    }
+});
+const limits = {
+    fileSize: 2 * 1024 * 1024,
+};
+const fileFilter = async (req, file, cb) => {
+    const ext = (file.originalname).split('.').pop();
+    const allowExt = ['jpg', 'jpeg', 'png', 'gif'];
+    const allowMime = ['image/jpeg', 'image/png', 'image/gif'];
+    if (allowExt.indexOf(ext) === -1 || allowMime.indexOf(file.mimetype) === -1) {
+        cb(null, false);
+        return cb(new Error('文件类型错误'));
+    }
+    return cb(null, true);
+};
+const upload = multer({
+    storage,
+    fileFilter,
+    limits,
+}).single('file');
 export const validate = {
     findInformation: [
         query('id').exists().isInt().withMessage('ID必须为正整数！'),
@@ -38,6 +73,23 @@ export const validate = {
             body('name').notEmpty().exists().withMessage('名称不能为空！'),
         ]),
     ],
+    uploadImage: upload,
+    duplicateCheck: [
+        body('file').custom(async (value, { req }) => {
+            req.file.md5 = fileMd5(req.file.path);
+            // let oldFile = await WechatFile.getFileByMd5(req.file.md5);
+            // if (oldFile) {
+            //     fs.access(req.file.path, fs.F_OK, (err) => {
+            //         if (err) {
+            //             console.error(err);
+            //             return;
+            //         }
+            //         fs.unlink(req.file.path, () => { });
+            //     });
+            //     return Promise.reject('文件已存在，请勿重复上传！');
+            // }
+        })
+    ]
 };
 export const listInformation = async (req, res, next) => {
     const errors = validationResult(req);
@@ -128,6 +180,40 @@ export const saveInformation = async (req, res, next) => {
         return res.json(res_data(null, -1, error.toString()));
     }
     return res.json(res_data());
+};
+export const saveImage = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.json(res_data(errors, -1, errors.errors[0].msg));
+    }
+    try {
+        let extra = {};
+        let file_type = detectiveTypeByFileMime(req.file.mimetype);
+        if (file_type === 0) {
+            extra = await getImageSize(req.file.path);
+        }
+
+        let data = {
+            file_name: req.file.filename,
+            file_type,
+            file_ext: req.file.originalname.split('.').pop(),
+            md5_code: req.file.md5,
+            driver: 'local',
+            key: req.file.path.substring('public/'.length, req.file.path.length).replace("\\", "/"),
+            file_size: req.file.size,
+            url: process.env.APP_DOMAIN + 'static/uploads/'+ req.file.filename,
+            ...extra,
+        };
+        let aFile = await WechatFile.create(data);
+        return res.json(res_data({
+            name: req.file.originalname,
+            url: data.url
+        }));
+    }
+    catch (error) {
+        fs.unlink(req.file.path, () => { });
+        return res.json(res_data(error, -1, error.toString()));
+    }
 };
 export const updateInformation = async (req, res, next) => {
     const errors = validationResult(req);

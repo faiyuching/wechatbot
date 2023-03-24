@@ -8,7 +8,7 @@
       align="stretch"
       class="crm-create-container">
         <flexbox class="crm-create-header">
-          <div style="flex:1;font-size:17px;color:#333;">{{ textMap[action.type]}}</div>
+          <div style="flex:1;font-size:17px;color:#333;">{{ this.textMap[action.type]}}</div>
           <img
             class="close"
             src="@/assets/img/task_close.png"
@@ -27,25 +27,44 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item label="内容">
-							<el-input v-if="temp.type==1" v-model="temp.reply.text" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入内容" />
-							<el-row v-if="temp.type==2">
-								<el-input class="content2-input" placeholder="请输入标题" v-model="temp.reply.title"/>
-								<el-input class="content2-input" placeholder="请输入链接" v-model="temp.reply.linkUrl"/>
-								<el-input :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入描述" v-model="temp.reply.description"/>
-								<el-col :size="20">
-									<el-button type="text">+ 添加图片</el-button>
-								</el-col>
-								<el-image style="width: 100px; height: 100px" :src="url" v-model="temp.reply.imageUrl"></el-image>
-							</el-row>
-							<el-autocomplete v-if="temp.type==3" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入内容" @select="handleSelectGroup"></el-autocomplete>
-							<!-- <el-checkbox-group v-if="temp.type==3" v-model="temp.reply.groupIds" style="width: 150px; height: 200px; overflow: auto">
-								<el-checkbox :key="group.id" v-for="group in temp.allGroups" :label="group.name"></el-checkbox>
-							</el-checkbox-group> -->
+              <el-input v-if="temp.type==1" v-model="temp.reply.text" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入内容" />
+              <el-row v-if="temp.type==2">
+                <el-input class="content2-input" placeholder="请输入标题" v-model="temp.reply.title"/>
+                <el-input class="content2-input" placeholder="请输入卡片链接的网址" v-model="temp.reply.linkUrl"/>
+                <el-input class="content2-input" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入标题所不能尽述的内容" v-model="temp.reply.description"/>
+                <el-upload
+                  name="file"
+                  ref="upload"
+                  action="http://localhost:8999/information/uploadFile"
+                  :headers="this.headers"
+                  list-type="picture"
+                  accept="image/jpeg,image/png"
+                  :limit="1"
+                  :on-exceed="uploadExceed"
+                  :on-error="uploadError"
+                  :on-success="uploadSuccess"
+                  :on-remove="uploadRemove"
+                  :auto-upload="true"
+                  :file-list="this.temp.reply.fileList">
+                <el-button size="small" type="primary">上传图片</el-button>
+                <span slot="tip" class="el-upload__tip">只能上传 jpg/png 文件，且不超过2M</span>
+                </el-upload>
+              </el-row>
+              <el-transfer
+                v-if="temp.type==3"
+                style="width: 600px;"
+                filterable
+                :filter-method="filterMethod"
+                filter-placeholder="请输入群组名称"
+                :titles="['所有群组', '已选群组']"
+                v-model="temp.reply.groupIds"
+                :data="allGroups">
+              </el-transfer>
             </el-form-item>
             <el-form-item label="标签">
-							<el-autocomplete v-if="inputVisible" size="small" v-model="inputValue" ref="saveTagInput" :fetch-suggestions="querySearch" placeholder="回车创建新标签" @select="handleSelect" @change="handleChange"></el-autocomplete>
+							<el-autocomplete v-if="tagInputVisible" size="small" v-model="tagInput" ref="saveTagInput" :fetch-suggestions="querySearch" placeholder="回车创建新标签" @select="handleTagSelect" @change="handleTagChange"></el-autocomplete>
 							<el-button v-else size="small" @click="showInput">+ 添加标签</el-button><br>
-							<el-tag :key="tag.id" v-for="tag in temp.tags" closable  @close="handleClose(tag)">{{tag.value}}</el-tag>
+							<el-tag :key="tag.id" v-for="tag in temp.tags" closable  @close="handleTagClose(tag)">{{tag.value}}</el-tag>
             </el-form-item>
           </el-form>
         </div>
@@ -67,6 +86,8 @@
 import { fetchInformation, updateInformation, createInformation } from '@/api/information'
 import { fetchRoomList } from '@/api/group'
 import { fetchTagList, createTag } from '@/api/tag'
+import { createFile, updateFile } from '@/api/file'
+import { getToken } from '@/utils/auth'
 import CreateView from '../../../components/CreateView.vue'
 import settings from '@/settings'
 import { thisExpression } from '@babel/types'
@@ -89,6 +110,21 @@ export default {
     }
   },
   data() {
+    const generateData = _ => {
+      var data = [];
+      fetchRoomList({limit:1000}).then(res => {
+        res.data.items.forEach((group, index) => {
+        data.push({
+          id: group.id,
+          label: group.name,
+          key: index,
+        });
+      });
+      }).catch((err) => {
+        this.loading = false
+      })
+      return data;
+    };
     return {
       textMap: {
         update: '编辑消息',
@@ -109,7 +145,8 @@ export default {
 					description: '',
 					imageUrl: '',
 					linkUrl: '',
-					groupIds: []
+					groupIds: [],
+          fileList: [],
 				},
         tags: [],
       },
@@ -119,23 +156,16 @@ export default {
 			},
       loading: false,
       types: settings.informationTypes,
-			inputVisible: false,
-			inputValue: '',
-			url: '',
-			allGroups: [],
-			restaurants: [
-				{ "value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号" },
-				{ "value": "Hot honey 首尔炸鸡（仙霞路）", "address": "上海市长宁区淞虹路661号" },
-				{ "value": "新旺角茶餐厅", "address": "上海市普陀区真北路988号创邑金沙谷6号楼113" },
-				{ "value": "泷千家(天山西路店)", "address": "天山西路438号" },
-				{ "value": "胖仙女纸杯蛋糕（上海凌空店）", "address": "上海市长宁区金钟路968号1幢18号楼一层商铺18-101" },
-			],
-			state: '',
-      timeout:  null
+			tagInputVisible: false,
+			tagInput: '',
+      headers: {Authorization: 'Bearer ' + getToken()},
+      allGroups: generateData(),
+      filterMethod(query, item) {
+        return item.label.indexOf(query) > -1;
+      },
     }
   },
   created() {
-		this.restaurants = this.allGroups;
 		this.loading = true
 		fetchTagList().then(res => {
 			this.allTags = res.data.items
@@ -147,55 +177,44 @@ export default {
 			this.loading = true
 			var id = this.action.id
 			fetchInformation(id).then(res => {
+        res.data.reply = JSON.parse(res.data.reply)
 				this.temp = res.data
 				this.allTags = this.allTags.filter((item) =>
 					!res.data.tags.some((ele) => ele.id === item.id)
 				);
-				this.loading = false
 			}).catch(() => {
 				this.loading = false
 			})
 		}
-		fetchRoomList().then(res => {
-			this.allGroups = res.data.items
-		}).catch(() => {
-			this.loading = false
-		})
   },
   methods: {
-		querySearchAsync(queryString, cb) {
-			var restaurants = this.restaurants;
-			var results = queryString ? restaurants.filter(this.createStateFilter(queryString)) : restaurants;
-			clearTimeout(this.timeout);
-			this.timeout = setTimeout(() => {
-				cb(results);
-			}, 3000 * Math.random());
-		},
-		createStateFilter(queryString) {
-			return (state) => {
-				return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-			};
-		},
-		handleSelectGroup(item) {
-			console.log(item);
-		},
-		handleAvatarSuccess(res, file) {
-			this.imageUrl = URL.createObjectURL(file.raw);
-		},
-		beforeAvatarUpload(file) {
-			const isJPGPNG = file.type === 'image/jpeg'||file.type === 'image/png';
-			const isLt2M = file.size / 1024 / 1024 < 2;
-
-			if (!isJPGPNG) {
-				this.$message.error('上传头像图片只能是 JPG 或 PNG 格式!');
-			}
-			if (!isLt2M) {
-				this.$message.error('上传头像图片大小不能超过 2MB!');
-			}
-			return isJPGPNG && isLt2M;
-		},
-		handleChange(){
-			this.addTag.value = this.inputValue
+    uploadRemove(){
+      this.temp.reply.fileList.pop()
+    },
+    uploadSuccess(res){
+      this.temp.reply.fileList.push({
+        name: res.data.name,
+        url: res.data.url
+      })
+    },
+    uploadError(){
+      this.$notify({
+        title: 'Error',
+        message: '上传失败',
+        type: 'error',
+        duration: 2000
+      })
+    },
+    uploadExceed(){
+      this.$notify({
+        title: 'Error',
+        message: '只能上传一张图片',
+        type: 'error',
+        duration: 2000
+      })
+    },
+		handleTagChange(){
+			this.addTag.value = this.tagInput
 			createTag(this.addTag).then((res) => {
 				this.$notify({
 					title: 'Success',
@@ -212,10 +231,10 @@ export default {
 					duration: 2000
 				})
 			})
-			this.inputVisible = false;
-			this.inputValue = '';
+			this.tagInputVisible = false;
+			this.tagInput = '';
 		},
-		handleSelect(item) {
+		handleTagSelect(item) {
 			if ( this.temp.tags.findIndex((tag)=>{return tag.id===item.id}) == -1 ) {
 				this.temp.tags.push(item)
 				this.allTags.splice(this.allTags.findIndex((tag)=>{return tag.id===item.id}), 1)
@@ -227,8 +246,8 @@ export default {
 					duration: 2000
 				})
 			}
-			this.inputVisible = false;
-			this.inputValue = '';
+			this.tagInputVisible = false;
+			this.tagInput = '';
 		},
 		querySearch(queryString, cb) {
 			var tags = this.allTags;
@@ -241,12 +260,12 @@ export default {
 				return (tag.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
 			};
 		},
-		handleClose(tag) {
+		handleTagClose(tag) {
         this.temp.tags.splice(this.temp.tags.indexOf(tag), 1);
 				this.allTags.push(tag)
       },
 		showInput() {
-			this.inputVisible = true;
+			this.tagInputVisible = true;
 			this.$nextTick(_ => {
 				this.$refs.saveTagInput.$refs.input.focus();
 			});
@@ -297,11 +316,12 @@ export default {
 .crm-create-container {
   position: relative;
   height: 100%;
+
 }
 
 .crm-create-flex {
   position: relative;
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: auto;
   flex: 1;
 }
@@ -336,28 +356,8 @@ export default {
 	margin-bottom: 10px;
 }
 
-.avatar-uploader .el-upload {
-	border: 1px dashed #d9d9d9;
-	border-radius: 6px;
-	cursor: pointer;
-	position: relative;
-	overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-	border-color: #409EFF;
-}
-.avatar-uploader-icon {
-	font-size: 28px;
-	color: #8c939d;
-	width: 178px;
-	height: 178px;
-	line-height: 178px;
-	text-align: center;
-}
-.avatar {
-	width: 178px;
-	height: 178px;
-	display: block;
+.el-upload__tip{
+  margin-left: 10px;
 }
 
 </style>

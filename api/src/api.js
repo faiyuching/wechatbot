@@ -17,7 +17,8 @@ expressJSDocSwagger(app)(apiDocsOptions);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
-app.use(express.static(config.__dirname + '/public'));
+app.use('/static', express.static(config.__dirname + '/public'));
+// app.use(express.static(config.__dirname + '/public'));
 app.use(routes);
 app.get('/', async (req, res, next) => {
     try {
