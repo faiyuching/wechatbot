@@ -25,6 +25,7 @@ class Bot {
             puppet,
             // workpro 的配置option START
             puppetOptions: {
+                authority: config.WECHATY_PUPPET_SERVICE_AUTHORITY,
                 token: config.WORKPRO_TOKEN,
                 tls: {
                     disable: true,
