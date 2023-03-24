@@ -38,7 +38,7 @@
                   :action="uploadUrl"
                   :headers="this.headers"
                   list-type="picture"
-                  accept="image/jpeg,image/png"
+                  accept="image/jpeg,image/png,image/jpg"
                   :limit="1"
                   :on-exceed="uploadExceed"
                   :on-error="uploadError"
