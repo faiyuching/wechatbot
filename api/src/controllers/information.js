@@ -33,8 +33,8 @@ const limits = {
 };
 const fileFilter = async (req, file, cb) => {
     const ext = (file.originalname).split('.').pop();
-    const allowExt = ['jpg', 'jpeg', 'png', 'gif'];
-    const allowMime = ['image/jpeg', 'image/png', 'image/gif'];
+    const allowExt = ['jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'PNG'];
+    const allowMime = ['image/jpeg', 'image/png', 'image/jpg'];
     if (allowExt.indexOf(ext) === -1 || allowMime.indexOf(file.mimetype) === -1) {
         cb(null, false);
         return cb(new Error('文件类型错误'));

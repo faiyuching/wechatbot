@@ -22,15 +22,15 @@ class Bot {
 
         const puppet = 'wechaty-puppet-service'
         this.bot = WechatyBuilder.build({
-            puppet,
-            // workpro 的配置option START
-            puppetOptions: {
-                authority: config.WECHATY_PUPPET_SERVICE_AUTHORITY,
-                token: config.WORKPRO_TOKEN,
-                tls: {
-                    disable: true,
-                },
-            },
+            // puppet,
+            // // workpro 的配置option START
+            // puppetOptions: {
+            //     authority: config.WECHATY_PUPPET_SERVICE_AUTHORITY,
+            //     token: config.WORKPRO_TOKEN,
+            //     tls: {
+            //         disable: true,
+            //     },
+            // },
             // workpro 的配置option END
         });
         console.log('hello');
