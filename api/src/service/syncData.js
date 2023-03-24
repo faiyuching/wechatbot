@@ -7,9 +7,9 @@ import { processContact } from "../util/wechat.js";
  */
 async function initAllRoomData() {
     var items = await Bot.getInstance().Room.findAll();
-    console.log(items)
     try {
         var data = items.map(room => {
+            console.log(room.id)
             let { payload } = room;
             return {
                 room_ident: payload.id,
@@ -23,6 +23,14 @@ async function initAllRoomData() {
     }
     catch (error) {
         console.log(`同步群组出错: ${error.toString()}`);
+    }
+    var groups = await WechatRoom.findAll({limit:10000});
+    for( let i = 0; i < groups.length; i++ ){
+        if( items.findIndex((item)=>{return groups[i].room_ident===item.id}) == -1 ){
+            let where = {}
+            where.room_ident = groups[i].room_ident
+            await WechatRoom.destroy({ where });
+        }
     }
 }
 /**
