@@ -29,7 +29,7 @@
             <el-form-item label="内容">
               <el-input v-if="temp.type==1" v-model="temp.reply.text" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入内容" />
               <el-row v-if="temp.type==2">
-                <el-input class="content2-input" placeholder="请输入卡片链接的网址" v-model="temp.reply.linkUrl"/>
+                <el-input class="content2-input" placeholder="请输入卡片链接的网址" v-model="temp.reply.url"/>
                 <el-input class="content2-input" placeholder="请输入标题" v-model="temp.reply.title"/>
                 <el-input class="content2-input" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入标题所不能尽述的内容" v-model="temp.reply.description"/>
                 <el-upload
