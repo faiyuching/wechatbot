@@ -98,7 +98,6 @@ async function keywordsMsg({ that, msg, contact, config }) {
                 var information = await WechatInformation.findOne({
                     where: { id: rels[i].information_id }
                 });
-                console.log(information)
                 var reply = JSON.parse(information.reply)
                 switch (information.type){
                     case 1:
@@ -112,10 +111,10 @@ async function keywordsMsg({ that, msg, contact, config }) {
                         // })
                         // return msgArr(1, link)
                         let obj = new (Bot.getInstance()).UrlLink({
-                            url: information.reply.url,
-                            title: information.reply.title,
-                            thumbnailUrl: information.reply.thumbnailUrl[0].url,
-                            description: information.reply.description,
+                            url: reply.url,
+                            title: reply.title,
+                            thumbnailUrl: reply.thumbnailUrl[0].url,
+                            description: reply.description,
                         });
                         console.log('回复内容', obj);
                         await pushJob(async () => {
