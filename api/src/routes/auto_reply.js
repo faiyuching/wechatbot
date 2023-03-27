@@ -1,0 +1,10 @@
+import * as express from "express";
+import * as autoReplyController from "../controllers/auto_reply.js";
+import auth from "../util/auth.js";
+const router = express.Router();
+router.get('/listAutoReply', auth.required, autoReplyController.validate.listAutoReply, autoReplyController.listAutoReply);
+router.get('/findAutoReply', auth.required, autoReplyController.validate.findAutoReply, autoReplyController.findAutoReply);
+router.post('/saveAutoReply', auth.required, autoReplyController.validate.saveAutoReply, autoReplyController.saveAutoReply);
+router.post('/updateAutoReply', auth.required, autoReplyController.validate.updateAutoReply, autoReplyController.updateAutoReply);
+router.post('/deleteAutoReply', auth.required, autoReplyController.validate.deleteAutoReply, autoReplyController.deleteAutoReply);
+export default router;

@@ -45,22 +45,23 @@
                   :on-success="uploadSuccess"
                   :on-remove="uploadRemove"
                   :auto-upload="true"
-                  :file-list="this.temp.reply.fileList">
+                  :file-list="this.temp.reply.thumbnailUrl">
                 <el-button size="small" type="primary">上传图片</el-button>
                 <span slot="tip" class="el-upload__tip">只能上传 jpg/png 文件，且不超过2M</span>
                 </el-upload>
               </el-row>
-              <el-transfer
-                v-if="temp.type==3"
-                style="width: 600px;"
-                filterable
-                :filter-method="filterMethod"
-                filter-placeholder="请输入群组名称"
-                :titles="['所有群组', '已选群组']"
-                v-model="temp.reply.groupIds"
-                :data="allGroups">
-              </el-transfer>
             </el-form-item>
+            <el-transfer
+              v-if="temp.type==3"
+              style="width: 600px; margin-bottom: 10px;"
+              filterable
+              :filter-method="filterMethod"
+              filter-placeholder="请输入群组名称"
+              :titles="['所有群组', '已选群组']"
+              v-model="temp.reply.groupIds"
+              :props="{ key: 'id',label: 'name'}"
+              :data="allGroups">
+            </el-transfer>
             <el-form-item label="标签">
 							<el-autocomplete v-if="tagInputVisible" size="small" v-model="tagInput" ref="saveTagInput" :fetch-suggestions="querySearch" placeholder="回车创建新标签" @select="handleTagSelect" @change="handleTagChange"></el-autocomplete>
 							<el-button v-else size="small" @click="showInput">+ 添加标签</el-button><br>
@@ -110,21 +111,6 @@ export default {
     }
   },
   data() {
-    const generateData = _ => {
-      var data = [];
-      fetchRoomList({limit:1000}).then(res => {
-        res.data.items.forEach((group, index) => {
-        data.push({
-          id: group.id,
-          label: group.name,
-          key: index,
-        });
-      });
-      }).catch((err) => {
-        this.loading = false
-      })
-      return data;
-    };
     return {
       textMap: {
         update: '编辑消息',
@@ -143,10 +129,9 @@ export default {
 					text: '',
 					title: '',
 					description: '',
-					imageUrl: '',
-					linkUrl: '',
+					thumbnailUrl: [],
+					url: '',
 					groupIds: [],
-          fileList: [],
 				},
         tags: [],
       },
@@ -159,9 +144,9 @@ export default {
 			tagInputVisible: false,
 			tagInput: '',
       headers: {Authorization: 'Bearer ' + getToken()},
-      allGroups: generateData(),
+      allGroups: [],
       filterMethod(query, item) {
-        return item.label.indexOf(query) > -1;
+        return item.name.indexOf(query) > -1;
       },
       uploadUrl: process.env.VUE_APP_BASE_API + '/information/uploadFile'
     }
@@ -187,13 +172,18 @@ export default {
 				this.loading = false
 			})
 		}
+    fetchRoomList({limit:1000}).then(res => {
+      this.allGroups = res.data.items
+    }).catch((err) => {
+      this.loading = false
+    });
   },
   methods: {
     uploadRemove(){
-      this.temp.reply.fileList.pop()
+      this.temp.reply.thumbnailUrl.pop()
     },
     uploadSuccess(res){
-      this.temp.reply.fileList.push({
+      this.temp.reply.thumbnailUrl.push({
         name: res.data.name,
         url: res.data.url
       })

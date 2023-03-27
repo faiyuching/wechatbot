@@ -199,15 +199,74 @@ const WechatInformationTag = db.define('WechatInformationTag', {
         }
     ],
 });
+/**
+ * 自动回复
+ */
+const WechatAutoReply = db.define('WechatAutoReply', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+    },
+    keyword: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    status: {
+        type: DataTypes.ENUM,
+        values: [0, 1],
+        defaultValue: 1,
+    },
+}, {
+    tableName: 'wechat_auto_reply',
+    timestamps: false,
+    indexes: [
+        {
+            name: 'uk_keyword',
+            unique: true,
+            fields: ['keyword']
+        }
+    ],
+});
+/**
+ * 行为消息关联表
+ */
+const WechatAutoReplyInformation = db.define('WechatAutoReplyInformation', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+    },
+    auto_reply_id: {
+        type: DataTypes.INTEGER,
+    },
+    information_id: {
+        type: DataTypes.INTEGER,
+    },
+}, {
+    tableName: 'wechat_auto_reply_information',
+    timestamps: false,
+    indexes: [
+        {
+            name: 'uk_auto_reply_id_information_id',
+            unique: true,
+            fields: ['auto_reply_id', 'information_id']
+        }
+    ],
+});
 export { WechatRoom };
 export { WechatKeyword };
 export { WechatInformation };
 export { WechatTag };
 export { WechatInformationTag };
+export { WechatAutoReply };
+export { WechatAutoReplyInformation };
 export default {
     WechatRoom,
     WechatKeyword,
     WechatInformation,
     WechatTag,
-    WechatInformationTag
+    WechatInformationTag,
+    WechatAutoReply,
+    WechatAutoReplyInformation
 };

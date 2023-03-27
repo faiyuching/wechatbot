@@ -98,7 +98,7 @@ export const constantRoutes = [
       {
         path: 'auto-reply',
         name: 'AutoReply',
-        component: () => import('@/views/keyword/keyword-list'),
+        component: () => import('@/views/auto-reply/auto-reply-list'),
         meta: { title: '自动回复', icon: 'keyword-list' }
       },
       {
