@@ -41,7 +41,18 @@
       </el-table-column>
       <el-table-column label="消息" min-width="100px" align="left">
         <template slot-scope="{row}">
-          <el-tag v-for="item in row.infos" v-bind:key="item.id">{{ item.name }}</el-tag>
+          <el-popover
+            placement="top-start"
+            :title="types[info.type]"
+            width="200"
+            trigger="click"
+            v-for="info in row.infos" v-bind:key="info.id">
+            <div>{{ info.reply.text }}</div>
+            <div>{{ info.reply.title }}</div>
+            <div>{{ info.reply.description }}</div>
+            <div>{{ info.reply.url }}</div>
+            <el-tag slot="reference">{{ info.name }}</el-tag>
+          </el-popover>
         </template>
       </el-table-column>
       <el-table-column label="状态" class-name="status-col" align="center" width="100px">
@@ -119,7 +130,7 @@ export default {
       createActionInfo: { type: 'create' },
       isCreate: false, // 是创建
       tableHeight: document.documentElement.clientHeight - 320, // 表的高度
-      types: settings.keywordTypes,
+      types: settings.informationTypes,
     }
   },
   created() {
@@ -134,9 +145,9 @@ export default {
       if (!this.listQuery.keyword) {
         this.listQuery.keyword = undefined
       }
-      fetchAutoReplyList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
+      fetchAutoReplyList(this.listQuery).then(res => {
+        this.list = res.data.items
+        this.total = res.data.total
         this.listLoading = false
       })
     },

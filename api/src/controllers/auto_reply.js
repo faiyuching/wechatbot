@@ -67,6 +67,7 @@ export const listAutoReply = async (req, res, next) => {
             var infos = []
             for(var j = 0; j < rels.length; j++){
                 var info = await WechatInformation.findByPk(rels[j].information_id);
+                info.reply = JSON.parse(info.reply)
                 infos.push(info)
             }
             items[i].dataValues.infos = infos
