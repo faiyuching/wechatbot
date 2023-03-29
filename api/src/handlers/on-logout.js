@@ -7,8 +7,8 @@ async function onLogout(user) {
     axios.post('https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=8d3a65d0-bb6b-4bb4-96d7-7741b235cc71', {
         msgtype: "text",
         text: {
-            "content": "小新登出了！请访问管理后台重新登录",
-            "mentioned_mobile_list":["13106918964"]
+            content: "小新登出了！请访问管理后台重新登录",
+            mentioned_mobile_list: ["13106918964"]
         }
     })
     .then(res => {
