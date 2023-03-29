@@ -1,7 +1,7 @@
 import Bot from "../bot.js";
 import * as expressValidator from "express-validator";
 import { res_data } from "../util/server.js";
-import { WechatAutoReply, WechatAutoReplyInformation, WechatInformation } from "../models/wechat-common.js";
+import { WechatAutoReply, WechatBehaviorInformation, WechatInformation } from "../models/wechat-common.js";
 import { Op } from "sequelize";
 import { processKeyword } from "../util/wechat.js";
 const { body, validationResult, oneOf, query } = expressValidator;
@@ -62,8 +62,9 @@ export const listAutoReply = async (req, res, next) => {
         var total = await WechatAutoReply.count({ where });
         for(var i = 0; i < items.length; i++){
             let where = {};
-            where.auto_reply_id = items[i].id;
-            var rels = await WechatAutoReplyInformation.findAll({ where });
+            where.behavior_id = items[i].id;
+            where.type = 1;
+            var rels = await WechatBehaviorInformation.findAll({ where });
             var infos = []
             for(var j = 0; j < rels.length; j++){
                 var info = await WechatInformation.findByPk(rels[j].information_id);
@@ -89,8 +90,9 @@ export const findAutoReply = async (req, res, next) => {
         if (data)
             data = processKeyword(data);
             let where = {};
-            where.auto_reply_id = req.query.id;
-            var rels = await WechatAutoReplyInformation.findAll({ where });
+            where.behavior_id = req.query.id;
+            where.type = 1;
+            var rels = await WechatBehaviorInformation.findAll({ where });
             var infoIds = []
             for(var j = 0; j < rels.length; j++){
                 var info = await WechatInformation.findByPk(rels[j].information_id);
@@ -117,10 +119,11 @@ export const saveAutoReply = async (req, res, next) => {
     }
     try {
         var autoReply = await WechatAutoReply.create(req.body);
-        var auto_reply_id = autoReply.id;
+        var behavior_id = autoReply.id;
         for(let i = 0; i < req.body.infoIds.length; i++){
             var information_id = req.body.infoIds[i];
-            await WechatAutoReplyInformation.create({ auto_reply_id, information_id });
+            var type = 1;
+            await WechatBehaviorInformation.create({ behavior_id, information_id, type });
         }
     }
     catch (error) {
@@ -139,13 +142,15 @@ export const updateAutoReply = async (req, res, next) => {
     }
     try {
         await WechatAutoReply.update({ ...req.body }, { where });
-        var auto_reply_id = req.body.id
+        var behavior_id = req.body.id
         where = {}
-        where.auto_reply_id = auto_reply_id
-        await WechatAutoReplyInformation.destroy({ where });
+        where.behavior_id = behavior_id
+        where.type = 1;
+        await WechatBehaviorInformation.destroy({ where });
         for(let i = 0; i < req.body.infoIds.length; i++){
             var information_id = req.body.infoIds[i];
-            await WechatAutoReplyInformation.create({ auto_reply_id, information_id });
+            var type = 1;
+            await WechatBehaviorInformation.create({ behavior_id, information_id, type });
         }
     }
     catch (error) {
@@ -168,8 +173,9 @@ export const deleteAutoReply = async (req, res, next) => {
     try {
         await WechatAutoReply.destroy({ where });
         where = {}
-        where.auto_reply_id = req.body.id
-        await WechatAutoReplyInformation.destroy({ where });
+        where.behavior_id = req.body.id
+        where.type = 1;
+        await WechatBehaviorInformation.destroy({ where });
     }
     catch (error) {
         return res.json(res_data(null, -1, error.toString()));

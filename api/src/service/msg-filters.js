@@ -2,7 +2,7 @@ import dispatch from "./event-dispatch-service.js";
 import { addRoom } from "./index.js";
 import { msgArr } from "../util/lib.js";
 import { pushJob } from "../util/queue.js";
-import { WechatAutoReply, WechatAutoReplyInformation, WechatInformation, WechatRoom } from "../models/wechat-common.js";
+import { WechatAutoReply, WechatBehaviorInformation, WechatInformation, WechatRoom } from "../models/wechat-common.js";
 import Bot from "../bot.js";
 function emptyMsg() {
     let msgArr = []; // 返回的消息列表
@@ -91,8 +91,8 @@ async function keywordsMsg({ that, msg, contact, config }) {
         });
         if(AutoReply) {
             console.log(`精确匹配到关键词${msg},正在回复用户`);
-            var rels = await WechatAutoReplyInformation.findAll({
-                where: { auto_reply_id: AutoReply.id }
+            var rels = await WechatBehaviorInformation.findAll({
+                where: { auto_reply_id: AutoReply.id, type: 1 }
             });
             for( let i = 0; i < rels.length; i++ ){
                 var information = await WechatInformation.findOne({
