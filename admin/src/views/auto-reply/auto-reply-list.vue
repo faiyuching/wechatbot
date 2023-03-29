@@ -14,9 +14,9 @@
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         添加
       </el-button>
-      <el-button class="filter-item el-button--danger" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleClearCache">
-        发送登出通知
-      </el-button>
+      <!-- <el-button class="filter-item el-button--danger" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleClearCache">
+        清除缓存
+      </el-button> -->
     </div>
 
     <!-- 欢迎语列表页 START -->
@@ -101,7 +101,6 @@ import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import AutoReplyForm from './components/auto-reply-form'
 import settings from '@/settings'
-import axios from "axios";
 
 export default {
   name: 'AutoReplyList',
@@ -209,38 +208,28 @@ export default {
           })
     },
     handleClearCache(row, index) {
-      axios.post('http://park.sanzhi.org.cn/index.php?app=wechat&ac=send2user', {
-          type: 1,
-          key: "xgm200707"
-      })
-      .then(res => {
-          console.log("通知小新机器人掉线成功!")
-      })
-      .catch(error => {
-          console.log("通知小新机器人掉线失败!", error)
-      })
-        // this.$confirm('确定要所有缓存吗？', '提示', {
-        //   confirmButtonText: '确定',
-        //   cancelButtonText: '取消',
-        //   type: 'warning'
-        // })
-        //   .then(() => {
-        //     clearRedisCache().then(() => {
-        //       this.$notify({
-        //         title: '成功',
-        //         message: '清除成功！',
-        //         type: 'success',
-        //         duration: 2000
-        //       })
-        //       this.list.splice(index, 1)
-        //     })
-        //   })
-        //   .catch(() => {
-        //     this.$message({
-        //       type: 'info',
-        //       message: '已取消操作'
-        //     })
-        //   })
+        this.$confirm('确定要所有缓存吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            clearRedisCache().then(() => {
+              this.$notify({
+                title: '成功',
+                message: '清除成功！',
+                type: 'success',
+                duration: 2000
+              })
+              this.list.splice(index, 1)
+            })
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消操作'
+            })
+          })
     },
   }
 }

@@ -4,9 +4,12 @@ import axios from "axios";
  */
 async function onLogout(user) {
     console.log(`用户${user}已登出`);
-    axios.post('http://park.sanzhi.org.cn/index.php?app=wechat&ac=send2user', {
-        type: 1,
-        key: "xgm200707"
+    axios.post('https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=8d3a65d0-bb6b-4bb4-96d7-7741b235cc71', {
+        msgtype: "text",
+        text: {
+            "content": "小新登出了！请访问管理后台重新登录",
+            "mentioned_mobile_list":["13106918964"]
+        }
     })
     .then(res => {
         console.log("通知小新机器人掉线成功!")
