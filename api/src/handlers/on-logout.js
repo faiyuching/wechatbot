@@ -8,7 +8,7 @@ async function onLogout(user) {
         msgtype: "text",
         text: {
             content: "小新登出了！请访问管理后台重新登录",
-            mentioned_mobile_list: ["13106918964"]
+            mentioned_list: ["LiaoXiXiong","YuQing"],
         }
     })
     .then(res => {
