@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="explain">
       <div class="title">群欢迎语</div>
-      <p class="">群员入群后，如果没有设置欢迎语，将会发送默认欢迎语。默认欢迎语不允许删除。</p>
+      <!-- <p class="">群员入群后，如果没有设置欢迎语，将会发送默认欢迎语。默认欢迎语不允许删除。</p> -->
       <p class="">
         <span class="nickname" v-pre>{{username}}</span> 将会被替换为入群的成员昵称
       </p>
@@ -35,38 +35,29 @@
       </el-table-column>
       <el-table-column label="群名" min-width="100px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.WechatRoom.name }}</span>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="内容" min-width="110px" align="left">
+      <el-table-column label="消息" min-width="100px" align="left">
         <template slot-scope="{row}">
-          <el-tooltip :content="row.content" placement="bottom" popper-class="fix-width-tooltip">
-            <span>{{ row.content | strSlice(50) }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-      <el-table-column label="图片" min-width="50px" align="left">
-        <template slot-scope="{row}"> 
-          <el-avatar shape="square" :size="100" fit="fill" :src="row.img.key" v-if="row.img"></el-avatar>
-          <span class="not-img" v-else>未设置</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="链接" min-width="180px" align="left">
-        <template slot-scope="{row}"> 
-          <a class="link-box" target="_blank" :href="row.link_url" v-if="row.link_url">
-            <el-avatar class="link-img" :size="100" shape="square" fit="fill" :src="row.link_img.key"></el-avatar>
-            <div class="link-right">
-              <p class="link-title">{{ row.link_title }}</p>
-              <p class="link-desc">{{ row.link_desc | strSlice(34) }}</p>
-            </div>
-          </a>
-          <span class="not-img" v-else>未设置</span>
+          <el-popover
+            placement="top-start"
+            :title="types[info.type]"
+            width="200"
+            trigger="click"
+            v-for="info in row.infos" v-bind:key="info.id">
+            <div>{{ info.reply.text }}</div>
+            <div>{{ info.reply.title }}</div>
+            <div>{{ info.reply.description }}</div>
+            <div>{{ info.reply.url }}</div>
+            <el-tag slot="reference">{{ info.name }}</el-tag>
+          </el-popover>
         </template>
       </el-table-column>
       <el-table-column label="状态" class-name="status-col" align="center" width="100px">
         <template slot-scope="{row}">
           <el-switch
-            :value="row.status ? true : false"
+            :value="row.is_welcome_open ? true : false"
             @change="handleModifyStatus(row)"
             active-color="#13ce66"
             inactive-color="#ff4949">
@@ -79,7 +70,7 @@
             编辑
           </el-button>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除
+            清空消息
           </el-button>
         </template>
       </el-table-column>
@@ -98,10 +89,12 @@
   
 <script>
 import { mapGetters } from 'vuex'
-import { fetchWelcomeList, updateWelcome, deleteWelcome } from '@/api/group'
+import { fetchRoomList, updateGroup } from '@/api/group'
+import { updateRoomInfo } from '@/api/room_information'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import WelcomeForm from './components/welcome-form'
+import settings from '@/settings'
 
 export default {
   name: 'GroupWelcome',
@@ -131,6 +124,11 @@ export default {
       createActionInfo: { type: 'create' },
       isCreate: false, // 是创建
       tableHeight: document.documentElement.clientHeight - 320, // 表的高度
+      types: settings.informationTypes,
+      temp: {
+        room_id: undefined,
+        infoIds: [],
+      },
     }
   },
   created() {
@@ -145,7 +143,7 @@ export default {
       if (!this.listQuery.keyword) {
         this.listQuery.keyword = undefined
       }
-      fetchWelcomeList(this.listQuery).then(response => {
+      fetchRoomList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
         this.listLoading = false
@@ -156,11 +154,11 @@ export default {
       this.getList()
     },
     handleModifyStatus(row) {
-      let status = row.status ? 0 : 1
-      updateWelcome({
-        id: row.id, status
+      let is_welcome_open = row.is_welcome_open ? 0 : 1
+      updateGroup({
+        id: row.id, is_welcome_open
       }).then(() => {
-        row.status = status
+        row.is_welcome_open = is_welcome_open
         this.$notify({
           title: '成功',
           message: '更新状态成功',
@@ -190,14 +188,15 @@ export default {
           type: 'warning'
         })
           .then(() => {
-            deleteWelcome(row.id).then(() => {
+            this.temp.room_id = row.id
+            updateRoomInfo(this.temp).then(() => {
               this.$notify({
                 title: '成功',
                 message: '删除成功！',
                 type: 'success',
                 duration: 2000
               })
-              this.list.splice(index, 1)
+              this.list[index].infos = []
             })
           })
           .catch(() => {
@@ -259,6 +258,13 @@ export default {
       margin: 5px 0;
     }
   }
+}
 
+.el-popover{
+  margin-right: 10px;
+}
+
+.el-tag + .el-tag {
+  margin-right: 10px;
 }
 </style>

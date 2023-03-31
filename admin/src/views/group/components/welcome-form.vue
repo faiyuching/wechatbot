@@ -16,51 +16,30 @@
         </flexbox>
         <div class="crm-create-flex">
           <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-            <el-form-item label="微信群">
-              <el-select v-model="temp.room_ident" filterable placeholder="请选择">
-                <el-option
-                  v-for="item in roomOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="内容">
-              <el-input v-model="temp.content" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入欢迎语内容" />
-            </el-form-item>
-            <el-form-item label="图片">
-              <el-select v-model="temp.img_id" filterable placeholder="请选择">
-                <el-option
-                  v-for="item in fileOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="链接标题" prop="link_title">
-              <el-input v-model="temp.link_title" placeholder="链接标题" />
-            </el-form-item>
-            <el-form-item label="链接描述" prop="link_desc">
-              <el-input v-model="temp.link_desc" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入链接描述" />
-            </el-form-item>
-            <el-form-item label="链接图片">
-              <el-select v-model="temp.link_img_id" filterable placeholder="请选择">
-                <el-option
-                  v-for="item in fileOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="链接地址" prop="link_url">
-              <el-input v-model="temp.link_url" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入链接描述" />
-            </el-form-item>
-            <el-form-item label="状态" prop="status">
-              <el-switch v-model="temp.status" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
-            </el-form-item>
+            <el-form-item label="选择群" v-if="this.action.type == 'create'"></el-form-item>
+            <el-transfer
+              v-if="this.action.type == 'create'"
+              style="width: 600px; margin-bottom: 10px;"
+              filterable
+              :filter-method="filterGroup"
+              filter-placeholder="请输入群组名称"
+              :titles="['所有群组', '已选群组']"
+              v-model="temp.roomIds"
+              :props="{ key: 'id',label: 'name'}"
+              :data="allGroups">
+            </el-transfer>
+            <el-form-item v-if="this.action.type == 'create'" label="选择消息"></el-form-item>
+            <div style="margin-bottom: 20px;font-weight: bold;" v-else>{{ this.groupName }}</div>
+            <el-transfer
+              style="width: 600px;"
+              filterable
+              :filter-method="filterInformation"
+              filter-placeholder="请输入消息名称"
+              :titles="['所有消息', '已选消息']"
+              v-model="temp.infoIds"
+              :data="allInformations"
+              :props="{ key: 'id',label: 'name'}">
+            </el-transfer>
           </el-form>
 
         </div>
@@ -79,7 +58,9 @@
 </template>
 
 <script>
-import { fetchWelcome, updateWelcome, createWelcome, fetchAllRoom } from '@/api/group'
+import { fetchRoom, fetchRoomList } from '@/api/group'
+import { fetchInformationList } from '@/api/information'
+import { createInformation, fetchRoomInfoList, updateRoomInfo } from '@/api/room_information'
 import { fetchAllFile } from '@/api/file'
 import CreateView from '../../../components/CreateView.vue'
 
@@ -111,47 +92,62 @@ export default {
       },
       tableKey: 0,
       temp: {
-        id: undefined,
-        room_ident: '',
-        content: undefined,
-        img_id: undefined,
-        link_title: undefined,
-        link_desc: undefined,
-        link_img_id: undefined,
-        link_url: undefined,
-        status: true,
+        room_id: undefined,
+        roomIds: [],
+        infoIds: [],
       },
-      roomOptions: [],
-      fileOptions: [],
       loading: false,
+      allGroups: [],
+      allInformations: [],
+      groupName: '',
+      filterGroup(query, item) {
+        return item.name.indexOf(query) > -1;
+      },
+      filterInformation(query, item) {
+        return item.name.indexOf(query) > -1;
+      },
     }
   },
   created() {   
-    this.getWelcome()
+    this.getList()
   },
   methods: {
-    getWelcome() {
-      Promise.all([fetchAllRoom(), fetchAllFile()]).then((values) => {
-          let [roomRes, fileRes] = values
-          console.log(roomRes, fileRes)
-          this.roomOptions = roomRes.data.map(item => {
-            let { room_ident, name } = item
-            return { value: room_ident, label: name }
-          })
-          this.fileOptions = fileRes.data.map(item => {
-            let { id, file_name } = item
-            return { value: id, label: file_name }
-          })
-      })
+    getList() {
+      if (this.action.type == 'create') {
+        this.loading = true
+        fetchRoomList({limit:1000}).then(res => {
+          this.allGroups = res.data.items
+        }).catch((err) => {
+          this.loading = false
+        });
+        fetchInformationList({limit:1000}).then(res => {
+          this.allInformations = res.data.items
+        }).catch((err) => {
+          this.loading = false
+        });
+        this.loading = false
+      }
       if (this.action.type == 'update') {
         this.loading = true
-        var id = this.action.id
-        fetchWelcome(id).then(res => {
-          this.temp = res.data 
+        fetchRoom({id: this.action.id}).then(res => {
+          this.temp.room_id = res.data.id
+          this.groupName = res.data.name
+        }).catch((err) => {
           this.loading = false
-        }).catch(() => {
+        });
+        fetchInformationList({limit:1000}).then(res => {
+          this.allInformations = res.data.items
+        }).catch((err) => {
           this.loading = false
-        })
+        });
+        fetchRoomInfoList({room_id: this.action.id}).then(res => {
+          res.data.items.forEach(item => {
+            this.temp.infoIds.push(item.information_id)
+          });
+        }).catch((err) => {
+          this.loading = false
+        });
+        this.loading = false
       }
     },
     hidenView() {
@@ -160,7 +156,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          createWelcome(this.temp).then(() => {
+          createInformation(this.temp).then(() => {
             this.dialogFormVisible = false
             this.$emit('save-success')
             this.hidenView()
@@ -178,7 +174,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          updateWelcome(tempData).then(() => {
+          updateRoomInfo(tempData).then(() => {
             this.dialogFormVisible = false
             this.$emit('save-success')
             this.hidenView()

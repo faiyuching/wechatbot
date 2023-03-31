@@ -2,6 +2,7 @@ import Bot from "../bot.js";
 import * as expressValidator from "express-validator";
 import { res_data } from "../util/server.js";
 import { WechatRoomWelcome, WechatRoom, WechatFile } from "../models/wechat.js";
+import { WechatInformation, WechatRoomInformation } from "../models/wechat-common.js";
 import { Op } from "sequelize";
 import { Group } from "../models/wavelib.js";
 import { initAllRoomData } from "../service/syncData.js";
@@ -39,6 +40,12 @@ export const validate = {
         ]),
         ...welcomeOption,
     ],
+    updateGroup: [
+        oneOf([
+            body('id', 'ID必须为整数！').exists().isInt(),
+            body('group_ident', '必须指定群标识！').notEmpty().exists(),
+        ]),
+    ],
     deleteWelcome: [
         oneOf([
             body('id', 'ID必须为整数！').exists().isInt(),
@@ -50,6 +57,9 @@ export const validate = {
         query('page').optional({ nullable: true }).isInt().withMessage('页数必须为正整数！'),
         query('limit').optional({ nullable: true }).isInt().withMessage('每页条数必须为正整数！'),
         query('keyword').optional({ nullable: true }).notEmpty(),
+    ],
+    findRoom: [
+        query('id').optional({ nullable: true }).isInt().withMessage('ID必须为正整数！'),
     ],
     relateRoomLibrary: [
         body('room_id', 'ID必须为整数！').exists().isInt(),
@@ -215,7 +225,34 @@ export const listRoom = async (req, res, next) => {
             include: Group
         });
         var total = await WechatRoom.count({ where });
+        for(var i = 0; i < items.length; i++){
+            let where = {};
+            where.room_id = items[i].id;
+            var rels = await WechatRoomInformation.findAll({ where });
+            var infos = []
+            for(var j = 0; j < rels.length; j++){
+                var info = await WechatInformation.findByPk(rels[j].information_id);
+                info.reply = JSON.parse(info.reply)
+                infos.push(info)
+            }
+            items[i].dataValues.infos = infos
+        }
         var data = { items, total };
+    }
+    catch (error) {
+        return res.json(res_data(null, -1, error.toString()));
+    }
+    return res.json(res_data(data));
+};
+export const findRoom = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.json(res_data(null, -1, errors.errors[0].msg));
+    }
+    try {
+        var data = await WechatRoom.findByPk(req.query.id);
+        if (data)
+            data = processWelcome(data);
     }
     catch (error) {
         return res.json(res_data(null, -1, error.toString()));
@@ -272,4 +309,29 @@ export const relateRoomLibrary = async (req, res, next) => {
     catch (error) {
         return res.json(res_data(null, -1, error.toString()));
     }
+};
+export const updateGroup = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.json(res_data(errors, -1, errors.errors[0].msg));
+    }
+    var where = {};
+    if (typeof req.body.id != "undefined") {
+        where.id = req.body.id;
+        delete req.body.id;
+    }
+    else {
+        where.group_ident = req.body.group_ident;
+        delete req.body.group_ident;
+    }
+    try {
+        if (req.body.is_welcome_open) {
+            // req.body = processWelcome(req.body, false);
+        }
+        await WechatRoom.update({ ...req.body }, { where });
+    }
+    catch (error) {
+        return res.json(res_data(null, -1, error.toString()));
+    }
+    return res.json(res_data());
 };

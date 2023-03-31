@@ -46,7 +46,7 @@
         </template>
       </el-table-column>
       <el-table-column label="动作" align="center" width="180" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
+        <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleBind(row)">
             绑定分馆
           </el-button>

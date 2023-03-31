@@ -32,6 +32,14 @@ export function updateWelcome(data) {
   })
 }
 
+export function updateGroup(data) {
+  return request({
+    url: '/group/updateGroup',
+    method: 'post',
+    data
+  })
+}
+
 export function deleteWelcome(id) {
   return request({
     url: '/group/deleteWelcome',
@@ -43,6 +51,14 @@ export function deleteWelcome(id) {
 export function fetchRoomList(query) {
   return request({
     url: '/group/listRoom',
+    method: 'get',
+    params: query
+  })
+}
+
+export function fetchRoom(query) {
+  return request({
+    url: '/group/findRoom',
     method: 'get',
     params: query
   })

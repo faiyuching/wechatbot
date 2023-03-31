@@ -29,6 +29,11 @@ const WechatRoom = db.define('WechatRoom', {
     groupid: {
         type: DataTypes.INTEGER,
     },
+    is_welcome_open: {
+        type: DataTypes.ENUM,
+        values: [0, 1],
+        defaultValue: 1,
+    },
 }, {
     tableName: 'wechat_room',
     timestamps: false,
@@ -259,6 +264,40 @@ const WechatBehaviorInformation = db.define('WechatAutoReplyInformation', {
         }
     ],
 });
+/**
+ *  群组与消息关联
+ */
+const WechatRoomInformation = db.define('WechatRoomInformation', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
+    room_id: {
+        type: DataTypes.INTEGER,
+    },
+    information_id: {
+        type: DataTypes.INTEGER,
+    },
+    created_at: {
+        type: DataTypes.DATE,
+    },
+    updated_at: {
+        type: DataTypes.DATE,
+    },
+}, {
+    tableName: 'wechat_room_information',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    indexes: [
+        {
+            name: 'room_id_information_id',
+            unique: true,
+            fields: ['room_id','information_id']
+        }
+    ],
+});
 export { WechatRoom };
 export { WechatKeyword };
 export { WechatInformation };
@@ -266,6 +305,7 @@ export { WechatTag };
 export { WechatInformationTag };
 export { WechatAutoReply };
 export { WechatBehaviorInformation };
+export { WechatRoomInformation };
 export default {
     WechatRoom,
     WechatKeyword,
@@ -273,5 +313,6 @@ export default {
     WechatTag,
     WechatInformationTag,
     WechatAutoReply,
-    WechatBehaviorInformation
+    WechatBehaviorInformation,
+    WechatRoomInformation,
 };

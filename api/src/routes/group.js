@@ -6,8 +6,10 @@ router.get('/listWelcome', auth.required, groupController.validate.listWelcome, 
 router.get('/findWelcome', auth.required, groupController.validate.findWelcome, groupController.findWelcome);
 router.post('/saveWelcome', auth.required, groupController.validate.saveWelcome, groupController.saveWelcome);
 router.post('/updateWelcome', auth.required, groupController.validate.updateWelcome, groupController.updateWelcome);
+router.post('/updateGroup', auth.required, groupController.validate.updateGroup, groupController.updateGroup);
 router.post('/deleteWelcome', auth.required, groupController.validate.deleteWelcome, groupController.deleteWelcome);
 router.get('/listRoom', auth.required, groupController.validate.listRoom, groupController.listRoom);
+router.get('/findRoom', auth.required, groupController.validate.findRoom, groupController.findRoom);
 router.get('/allRoom', auth.required, groupController.allRoom);
 router.post('/syncRoom', auth.required, groupController.syncRoom);
 router.get('/listLibrary', auth.required, groupController.listLibrary);
