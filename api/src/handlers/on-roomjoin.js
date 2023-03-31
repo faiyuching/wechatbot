@@ -14,42 +14,44 @@ async function onRoomjoin(room, inviteeList, inviter, date) {
     let where = {}
     where.name = roomName
     var r = await WechatRoom.findOne({ where });
-    where = {}
-    where.room_id = r.id
-    var items = await WechatRoomInformation.findAll({ where });
-    for(let i = 0; i < items.length; i++){
-        var information = await WechatInformation.findByPk(items[i].information_id);
-        information.reply = information.reply.replace('{{username}}', nameList);
-        var reply = JSON.parse(information.reply)
-        switch (information.type){
-            case 1:
-                room.say(reply.text);
-                break;
-            case 2:
-                let obj = new (Bot.getInstance()).UrlLink({
-                    url: reply.url,
-                    title: reply.title,
-                    thumbnailUrl: reply.thumbnailUrl[0].url,
-                    description: reply.description,
-                });
-                room.say(obj);
-                break;
-            case 3:
-                var rooms = await WechatRoom.findAll({
-                    where: { id: reply.groupIds }
-                });
-                for( let i = 0; i < rooms.length; i++ ){
-                    let roomName = rooms[i].name;
-                    const room = await that.Room.find({ topic: roomName })
-                    if (room) {
-                    try {
-                        await room.add(inviteeList)
-                    } catch(e) {
-                        console.error(e)
+    if(r.is_welcome_open){
+        where = {}
+        where.room_id = r.id
+        var items = await WechatRoomInformation.findAll({ where });
+        for(let i = 0; i < items.length; i++){
+            var information = await WechatInformation.findByPk(items[i].information_id);
+            information.reply = information.reply.replace('{{username}}', nameList);
+            var reply = JSON.parse(information.reply)
+            switch (information.type){
+                case 1:
+                    room.say(reply.text);
+                    break;
+                case 2:
+                    let obj = new (Bot.getInstance()).UrlLink({
+                        url: reply.url,
+                        title: reply.title,
+                        thumbnailUrl: reply.thumbnailUrl[0].url,
+                        description: reply.description,
+                    });
+                    room.say(obj);
+                    break;
+                case 3:
+                    var rooms = await WechatRoom.findAll({
+                        where: { id: reply.groupIds }
+                    });
+                    for( let i = 0; i < rooms.length; i++ ){
+                        let roomName = rooms[i].name;
+                        const room = await that.Room.find({ topic: roomName })
+                        if (room) {
+                        try {
+                            await room.add(inviteeList)
+                        } catch(e) {
+                            console.error(e)
+                        }
+                        }
                     }
-                    }
-                }
-                break;
+                    break;
+            }
         }
     }
     // // 非微澜相关的群，不发送欢迎语
