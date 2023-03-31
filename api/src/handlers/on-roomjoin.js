@@ -3,7 +3,6 @@ import path from "path";
 import { WechatRoomInformation, WechatInformation, WechatRoom } from "../models/wechat-common.js";
 import { pushJob } from "../util/queue.js";
 import Bot from "../bot.js";
-import { msgArr } from "../util/lib.js";
 
 /**
  * 群中有新人进入，触发欢迎语
@@ -22,7 +21,6 @@ async function onRoomjoin(room, inviteeList, inviter, date) {
         var information = await WechatInformation.findByPk(items[i].information_id);
         information.reply = information.reply.replace('{{username}}', nameList);
         var reply = JSON.parse(information.reply)
-        console.log("information.type: ", information.type)
         switch (information.type){
             case 1:
                 room.say(reply.text);
