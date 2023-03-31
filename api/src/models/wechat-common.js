@@ -236,7 +236,7 @@ const WechatAutoReply = db.define('WechatAutoReply', {
 /**
  * 行为消息关联表
  */
-const WechatBehaviorInformation = db.define('WechatAutoReplyInformation', {
+const WechatAutoReplyInformation = db.define('WechatAutoReplyInformation', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -247,20 +247,20 @@ const WechatBehaviorInformation = db.define('WechatAutoReplyInformation', {
         values: [1, 2, 3, 4],
         defaultValue: 0,
     },
-    behavior_id: {
+    auto_reply_id: {
         type: DataTypes.INTEGER,
     },
     information_id: {
         type: DataTypes.INTEGER,
     },
 }, {
-    tableName: 'wechat_behavior_information',
+    tableName: 'wechat_auto_reply_information',
     timestamps: false,
     indexes: [
         {
-            name: 'uk_behavior_id_information_id',
+            name: 'uk_auto_reply_id_information_id',
             unique: true,
-            fields: ['behavior_id', 'information_id']
+            fields: ['auto_reply_id', 'information_id']
         }
     ],
 });
@@ -304,7 +304,7 @@ export { WechatInformation };
 export { WechatTag };
 export { WechatInformationTag };
 export { WechatAutoReply };
-export { WechatBehaviorInformation };
+export { WechatAutoReplyInformation };
 export { WechatRoomInformation };
 export default {
     WechatRoom,
@@ -313,6 +313,6 @@ export default {
     WechatTag,
     WechatInformationTag,
     WechatAutoReply,
-    WechatBehaviorInformation,
+    WechatAutoReplyInformation,
     WechatRoomInformation,
 };

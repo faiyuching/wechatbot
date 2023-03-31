@@ -2,7 +2,7 @@ import dispatch from "./event-dispatch-service.js";
 import { addRoom } from "./index.js";
 import { msgArr } from "../util/lib.js";
 import { pushJob } from "../util/queue.js";
-import { WechatAutoReply, WechatBehaviorInformation, WechatInformation, WechatRoom } from "../models/wechat-common.js";
+import { WechatAutoReply, WechatAutoReplyInformation, WechatInformation, WechatRoom } from "../models/wechat-common.js";
 import Bot from "../bot.js";
 function emptyMsg() {
     let msgArr = []; // 返回的消息列表
@@ -91,25 +91,16 @@ async function keywordsMsg({ that, msg, contact, config }) {
         });
         if(AutoReply) {
             console.log(`精确匹配到关键词${msg},正在回复用户`);
-            var rels = await WechatBehaviorInformation.findAll({
-                where: { auto_reply_id: AutoReply.id, type: 1 }
+            var rels = await WechatAutoReplyInformation.findAll({
+                where: { auto_reply_id: AutoReply.id }
             });
             for( let i = 0; i < rels.length; i++ ){
-                var information = await WechatInformation.findOne({
-                    where: { id: rels[i].information_id }
-                });
+                var information = await WechatInformation.findByPk(rels[i].information_id);
                 var reply = JSON.parse(information.reply)
                 switch (information.type){
                     case 1:
                         return msgArr(1, reply.text);
                     case 2:
-                        // const link = new UrlLink({
-                        //     description : information.reply.description,
-                        //     title       : information.reply.title,
-                        //     url         : information.reply.url,
-                        //     thumbnailUrl: information.reply.thumbnailUrl,
-                        // })
-                        // return msgArr(1, link)
                         let obj = new (Bot.getInstance()).UrlLink({
                             url: reply.url,
                             title: reply.title,

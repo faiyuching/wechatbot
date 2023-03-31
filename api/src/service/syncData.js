@@ -9,11 +9,11 @@ async function initAllRoomData() {
     var items = await Bot.getInstance().Room.findAll();
     try {
         var data = items.map(room => {
-            console.log(room.id)
             let { payload } = room;
             return {
                 room_ident: payload.id,
-                name: payload.topic
+                name: payload.topic,
+                is_welcome_open: 1
             };
         });
         WechatRoom.bulkCreate(data, {
