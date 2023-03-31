@@ -242,11 +242,6 @@ const WechatAutoReplyInformation = db.define('WechatAutoReplyInformation', {
         autoIncrement: true,
         primaryKey: true,
     },
-    type: {
-        type: DataTypes.ENUM,
-        values: [1, 2, 3, 4],
-        defaultValue: 0,
-    },
     auto_reply_id: {
         type: DataTypes.INTEGER,
     },
