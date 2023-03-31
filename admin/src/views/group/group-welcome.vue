@@ -3,9 +3,6 @@
     <div class="explain">
       <div class="title">群欢迎语</div>
       <!-- <p class="">群员入群后，如果没有设置欢迎语，将会发送默认欢迎语。默认欢迎语不允许删除。</p> -->
-      <p class="">
-        <span class="nickname" v-pre>{{username}}</span> 将会被替换为入群的成员昵称
-      </p>
     </div>
 
     <div class="filter-container">
@@ -233,9 +230,6 @@ export default {
 }
 .filter-container {
     padding-bottom: 10px;
-}
-.nickname {
-  color: #f56c6c;
 }
 .not-img {
   color: #c0c4cc;

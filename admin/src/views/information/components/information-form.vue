@@ -28,6 +28,7 @@
             </el-form-item>
             <el-form-item label="内容">
               <el-input v-if="temp.type==1" v-model="temp.reply.text" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入内容" />
+              <div v-if="temp.type==1" class="tips"><span v-pre>{{username}}</span>将会被替换为成员昵称</div>
               <el-row v-if="temp.type==2">
                 <el-input class="content2-input" placeholder="请输入卡片链接的网址" v-model="temp.reply.url"/>
                 <el-input class="content2-input" placeholder="请输入标题" v-model="temp.reply.title"/>
@@ -351,5 +352,9 @@ export default {
   margin-left: 10px;
 }
 
+.tips{
+  font-size: small;
+  color: darkgrey;
+}
 </style>
 
