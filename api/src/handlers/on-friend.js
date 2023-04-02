@@ -1,6 +1,7 @@
 import Bot from "../bot.js";
 import { WechatFriendWelcome } from "../models/wechat.js";
-import { contactSay } from "../service/index.js";
+import { WechatInformation, WechatRoom } from "../models/wechat-common.js";
+import { privateSay } from "../service/index.js";
 import { addContactToDb } from "../service/syncData.js";
 import { delay } from "../util/server.js";
 
@@ -26,18 +27,13 @@ async function onFriend(friendship) {
                     await addContactToDb(friendship.contact());
                     break;
                 case Bot.getInstance().Friendship.Type.Confirm:
-                    logMsg = '已确认添加好友：' + name;
                     let contact = await Bot.getInstance().Contact.load(friendship.contact().id);
-                    let welcome = await WechatFriendWelcome.findOne({ where: {
-                            status: 1, name: '默认好友欢迎语'
-                        } });
-                    if (welcome) {
-                        await contactSay(contact, { type: 1, content: welcome.content });
+                    let where = {}
+                    where.is_friend_welcome = 1;
+                    var infos = await WechatInformation.findAll({ where });
+                    for( let i = 0; i < infos.length; i++){
+                        await privateSay(contact, infos[i]);
                     }
-                    else {
-                        await contactSay(contact, { type: 1, content: "hello，我是小新" });
-                    }
-                    console.log(logMsg);
                     break;
             }
         }

@@ -32,6 +32,14 @@ export function updateInformation(data) {
   })
 }
 
+export function setFriendWelcome(data) {
+  return request({
+    url: '/information/setFriendWelcome',
+    method: 'post',
+    data
+  })
+}
+
 export function deleteInformation(id) {
   return request({
     url: '/information/deleteInformation',

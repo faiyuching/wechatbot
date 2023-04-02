@@ -67,6 +67,9 @@ export const validate = {
         ]),
         ...informationOption,
     ],
+    setFriendWelcome: [
+        body('infoIds').exists().isInt().withMessage('消息id不能为空！'),
+    ],
     deleteInformation: [
         oneOf([
             body('id', 'ID必须为整数！').exists().isInt(),
@@ -274,5 +277,25 @@ export const deleteInformation = async (req, res, next) => {
     catch (error) {
         return res.json(res_data(null, -1, error.toString()));
     }
+    return res.json(res_data());
+};
+
+export const setFriendWelcome = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.json(res_data(errors, -1, errors.errors[0].msg));
+    }
+    var where = {};
+    try {
+        await WechatInformation.update({ is_friend_welcome: 0 }, { where });
+        for( let i = 0; i < req.body.infoIds.length; i++){
+            where.id = req.body.infoIds[i];
+            await WechatInformation.update({ is_friend_welcome: 1 }, { where });
+        }
+    }
+    catch (error) {
+        return res.json(res_data(null, -1, error.toString()));
+    }
+
     return res.json(res_data());
 };

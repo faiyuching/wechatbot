@@ -97,26 +97,23 @@ export default {
     }
   },
   created() {
-    this.getAutoReply()
     fetchInformationList({limit:1000}).then(res => {
       this.allInformations = res.data.items
     }).catch((err) => {
       this.loading = false
     });
+    if (this.action.type == 'update') {
+      this.loading = true
+      var id = this.action.id
+      fetchAutoReply(id).then(res => {
+        this.temp = res.data
+        this.loading = false
+      }).catch(() => {
+        this.loading = false
+      })
+    }
   },
   methods: {
-    getAutoReply() {
-      if (this.action.type == 'update') {
-        this.loading = true
-        var id = this.action.id
-        fetchAutoReply(id).then(res => {
-          this.temp = res.data
-          this.loading = false
-        }).catch(() => {
-          this.loading = false
-        })
-      }
-    },
     hidenView() {
       this.$emit('hiden-view')
     },

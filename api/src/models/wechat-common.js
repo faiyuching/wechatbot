@@ -119,6 +119,11 @@ const WechatInformation = db.define('WechatInformation', {
     reply: {
         type: DataTypes.JSON,
     },
+    is_friend_welcome: {
+        type: DataTypes.ENUM,
+        values: [0, 1],
+        defaultValue: 0,
+    },
     created_at: {
         type: DataTypes.DATE,
     },

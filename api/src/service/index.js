@@ -157,13 +157,50 @@ async function addRoom(that, contact, roomName, replys) {
         console.log(`不存在此群：${roomName}`);
     }
 }
+
+async function privateSay(contact, info) {
+    var reply = JSON.parse(info.reply)
+    switch (info.type){
+        case 1:
+            contact.say(reply.text);
+            break;
+        case 2:
+            let obj = new (Bot.getInstance()).UrlLink({
+                url: reply.url,
+                title: reply.title,
+                thumbnailUrl: reply.thumbnailUrl[0].url,
+                description: reply.description,
+            });
+            contact.say(obj);
+            break;
+        case 3:
+            var rooms = await WechatRoom.findAll({
+                where: { id: reply.groupIds }
+            });
+            for( let i = 0; i < rooms.length; i++ ){
+                let roomName = rooms[i].name;
+                const room = await Bot.getInstance().Room.find({ topic: roomName })
+                if (room) {
+                try {
+                    await room.add(contact)
+                } catch(e) {
+                    console.error(e)
+                }
+                }
+            }
+            break;
+    }
+}
+
 export { addRoom };
 export { contactSay };
 export { roomSay };
 export { allConfig };
+export { privateSay };
 export default {
     addRoom,
     contactSay,
     roomSay,
-    allConfig
+    allConfig,
+    privateSay
 };

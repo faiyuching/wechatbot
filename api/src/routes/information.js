@@ -7,5 +7,6 @@ router.get('/findInformation', auth.required, informationController.validate.fin
 router.post('/saveInformation', auth.required, informationController.validate.saveInformation, informationController.saveInformation);
 router.post('/uploadFile', auth.required, informationController.validate.uploadImage, informationController.validate.duplicateCheck, informationController.saveImage);
 router.post('/updateInformation', auth.required, informationController.validate.updateInformation, informationController.updateInformation);
+router.post('/setFriendWelcome', auth.required, informationController.validate.setFriendWelcome, informationController.setFriendWelcome);
 router.post('/deleteInformation', auth.required, informationController.validate.deleteInformation, informationController.deleteInformation);
 export default router;
