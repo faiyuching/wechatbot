@@ -105,13 +105,13 @@ export const constantRoutes = [
         path: 'contact-welcome',
         name: 'ContactWelcome',
         component: () => import('@/views/contact/contact-welcome'),
-        meta: { title: '好友欢迎', icon: 'friend-welcome' }
+        meta: { title: '好友欢迎语', icon: 'friend-welcome' }
       },
       {
         path: 'group-welcome',
         name: 'GroupWelcome',
         component: () => import('@/views/group/group-welcome'),
-        meta: { title: '入群欢迎', icon: 'friend-welcome' }
+        meta: { title: '入群欢迎语', icon: 'friend-welcome' }
       }
     ]
   },

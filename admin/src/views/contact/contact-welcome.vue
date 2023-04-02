@@ -2,7 +2,7 @@
 <template>
   <div class="app-container">
     <div class="explain">
-      <div class="title">联系人欢迎语</div>
+      <div class="title">好友欢迎语</div>
       <p class="">用户添加好友后，将会发送此欢迎语。</p>
     </div>
 
