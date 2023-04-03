@@ -8,8 +8,8 @@ import { processContact } from "../util/wechat.js";
 async function initAllRoomData() {
     var items = await Bot.getInstance().Room.findAll();
     try {
-        var data = items.map(room => {
-            let { payload } = room;
+        var data = items.map(item => {
+            let { payload } = item;
             return {
                 room_ident: payload.id,
                 name: payload.topic,
@@ -38,9 +38,9 @@ async function initAllRoomData() {
  * @param {Wechaty} that
  */
 async function initAllContactData() {
-    var contacts = await Bot.getInstance().Contact.findAll();
+    var items = await Bot.getInstance().Contact.findAll();
     try {
-        var data = contacts.map(processContact);
+        var data = items.map(processContact);
         WechatContact.bulkCreate(data, {
             fields: Object.keys(data[0]),
             updateOnDuplicate: ["weixin", "name", "friend", "alias", "avatar", "self", "start"], // 他妈的不更新，垃圾啊 
@@ -48,6 +48,14 @@ async function initAllContactData() {
     }
     catch (error) {
         console.log(`同步联系人出错: ${error.toString()}`, error);
+    }
+    var contacts = await WechatContact.findAll();
+    for( let i = 0; i < contacts.length; i++ ){
+        if( items.findIndex((item)=>{return contacts[i].contact_ident===item.id}) == -1 ){
+            let where = {}
+            where.contact_ident = contacts[i].contact_ident
+            await WechatContact.destroy({ where });
+        }
     }
 }
 /**
