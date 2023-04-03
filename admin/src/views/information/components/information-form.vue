@@ -156,12 +156,10 @@ export default {
 		this.loading = true
 		fetchTagList().then(res => {
 			this.allTags = res.data.items
-			this.loading = false
 		}).catch(() => {
 			this.loading = false
 		})
 		if (this.action.type == 'update') {
-			this.loading = true
 			var id = this.action.id
 			fetchInformation(id).then(res => {
         res.data.reply = JSON.parse(res.data.reply)
@@ -173,11 +171,12 @@ export default {
 				this.loading = false
 			})
 		}
-    fetchRoomList({limit:1000}).then(res => {
+    fetchRoomList({limit:0}).then(res => {
       this.allGroups = res.data.items
     }).catch((err) => {
       this.loading = false
     });
+    this.loading = false
   },
   methods: {
     uploadRemove(){

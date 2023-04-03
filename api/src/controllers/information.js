@@ -112,9 +112,13 @@ export const listInformation = async (req, res, next) => {
         let limit = req.query.limit ? parseInt(req.query.limit) : 10;
         let page = req.query.page ? parseInt(req.query.page) : 1;
         let offset = (page - 1) * limit;
-        var items = await WechatInformation.findAll({
-            where, limit, offset,
-        });
+        if(req.query.limit == 0){
+            var items = await WechatInformation.findAll({ where });
+        }else{
+            var items = await WechatInformation.findAll({
+                where, limit, offset,
+            });
+        }
         items = items.map(processKeyword);
         var total = await WechatInformation.count({ where });
         for(var i = 0; i < items.length; i++){

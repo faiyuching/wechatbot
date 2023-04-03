@@ -113,30 +113,23 @@ export default {
   },
   methods: {
     getList() {
+      this.loading = true
+      fetchInformationList({limit:0}).then(res => {
+        this.allInformations = res.data.items
+      }).catch((err) => {
+        this.loading = false
+      });
       if (this.action.type == 'create') {
-        this.loading = true
-        fetchRoomList({limit:1000}).then(res => {
+        fetchRoomList({limit:0}).then(res => {
           this.allGroups = res.data.items
         }).catch((err) => {
           this.loading = false
         });
-        fetchInformationList({limit:1000}).then(res => {
-          this.allInformations = res.data.items
-        }).catch((err) => {
-          this.loading = false
-        });
-        this.loading = false
       }
       if (this.action.type == 'update') {
-        this.loading = true
         fetchRoom({id: this.action.id}).then(res => {
           this.temp.room_id = res.data.id
           this.groupName = res.data.name
-        }).catch((err) => {
-          this.loading = false
-        });
-        fetchInformationList({limit:1000}).then(res => {
-          this.allInformations = res.data.items
         }).catch((err) => {
           this.loading = false
         });
@@ -147,8 +140,8 @@ export default {
         }).catch((err) => {
           this.loading = false
         });
-        this.loading = false
       }
+      this.loading = false
     },
     hidenView() {
       this.$emit('hiden-view')

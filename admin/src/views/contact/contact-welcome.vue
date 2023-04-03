@@ -51,7 +51,7 @@ export default {
   },
   created() {
     this.loading = true
-    fetchInformationList({limit:1000}).then(res => {
+    fetchInformationList({limit:0}).then(res => {
       this.allInformations = res.data.items
       res.data.items.forEach(item => {
         if(item.is_friend_welcome){

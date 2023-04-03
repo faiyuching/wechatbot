@@ -97,7 +97,7 @@ export default {
     }
   },
   created() {
-    fetchInformationList({limit:1000}).then(res => {
+    fetchInformationList({limit:0}).then(res => {
       this.allInformations = res.data.items
     }).catch((err) => {
       this.loading = false

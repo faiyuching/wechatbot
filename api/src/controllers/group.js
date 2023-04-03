@@ -220,10 +220,17 @@ export const listRoom = async (req, res, next) => {
         let limit = req.query.limit ? parseInt(req.query.limit) : 10;
         let page = req.query.page ? parseInt(req.query.page) : 1;
         let offset = (page - 1) * limit;
-        var items = await WechatRoom.findAll({
-            where, limit, offset,
-            include: Group
-        });
+        if(req.query.limit == 0){
+            var items = await WechatRoom.findAll({
+                where,
+                include: Group
+            });
+        }else{
+            var items = await WechatRoom.findAll({
+                where, limit, offset,
+                include: Group
+            });
+        }
         var total = await WechatRoom.count({ where });
         for(var i = 0; i < items.length; i++){
             let where = {};

@@ -24,7 +24,7 @@ async function initAllRoomData() {
     catch (error) {
         console.log(`同步群组出错: ${error.toString()}`);
     }
-    var groups = await WechatRoom.findAll({limit:10000});
+    var groups = await WechatRoom.findAll();
     for( let i = 0; i < groups.length; i++ ){
         if( items.findIndex((item)=>{return groups[i].room_ident===item.id}) == -1 ){
             let where = {}
