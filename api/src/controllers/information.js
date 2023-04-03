@@ -1,7 +1,7 @@
 import Bot from "../bot.js";
 import * as expressValidator from "express-validator";
 import { res_data, fileMd5, detectiveTypeByFileMime, getImageSize } from "../util/server.js";
-import { WechatInformation, WechatInformationTag, WechatTag } from "../models/wechat-common.js";
+import { WechatInformation, WechatInformationTag, WechatTag, WechatRoomInformation, WechatAutoReplyInformation } from "../models/wechat-common.js";
 import { WechatFile } from "../models/wechat.js";
 import { Op } from "sequelize";
 import { processKeyword } from "../util/wechat.js";
@@ -257,6 +257,18 @@ export const deleteInformation = async (req, res, next) => {
         where.id = req.body.id;
     }
     try {
+        where = {}
+        where.information_id = req.body.id
+        var autoReply = await WechatAutoReplyInformation.findOne({ where })
+        if(autoReply){
+            return res.json(res_data(null, -1, "消息已被自动回复使用，无法删除"));
+        }
+        var roomInfo = await WechatRoomInformation.findOne({ where })
+        if(roomInfo){
+            return res.json(res_data(null, -1, "消息已被入群欢迎语使用，无法删除"));
+        }
+        where = {}
+        where.id = req.body.id
         await WechatInformation.destroy({ where });
         where = {}
         where.information_id = req.body.id
@@ -266,7 +278,6 @@ export const deleteInformation = async (req, res, next) => {
             where = {}
             where.tag_id = infoRels[i].tag_id
             var tagRels = await WechatInformationTag.findAll({ where });
-            console.log(tagRels.length)
             if(tagRels.length == 0){
                 where = {}
                 where.id = infoRels[i].tag_id
