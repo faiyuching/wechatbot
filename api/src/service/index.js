@@ -192,15 +192,35 @@ async function privateSay(contact, info) {
     }
 }
 
+async function groupSay(group, info) {
+    var reply = JSON.parse(info.reply)
+    switch (info.type){
+        case 1:
+            group.say(reply.text);
+            break;
+        case 2:
+            let obj = new (Bot.getInstance()).UrlLink({
+                url: reply.url,
+                title: reply.title,
+                thumbnailUrl: reply.thumbnailUrl[0].url,
+                description: reply.description,
+            });
+            group.say(obj);
+            break;
+    }
+}
+
 export { addRoom };
 export { contactSay };
 export { roomSay };
 export { allConfig };
 export { privateSay };
+export { groupSay };
 export default {
     addRoom,
     contactSay,
     roomSay,
     allConfig,
-    privateSay
+    privateSay,
+    groupSay
 };

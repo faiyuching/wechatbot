@@ -8,6 +8,7 @@ import onFriend from "./handlers/on-friend.js";
 import onRoomjoin from "./handlers/on-roomjoin.js";
 import onRoomleave from "./handlers/on-roomleave.js";
 import onRoomtopic from "./handlers/on-roomtopic.js";
+import onCron from "./handlers/on-cron.js";
 import config from "./config.js";
 
 class Bot {
@@ -22,15 +23,15 @@ class Bot {
 
         const puppet = 'wechaty-puppet-service'
         this.bot = WechatyBuilder.build({
-            puppet,
-            // workpro 的配置option START
-            puppetOptions: {
-                authority: config.WECHATY_PUPPET_SERVICE_AUTHORITY,
-                token: config.WORKPRO_TOKEN,
-                tls: {
-                    disable: true,
-                },
-            },
+            // puppet,
+            // // workpro 的配置option START
+            // puppetOptions: {
+            //     authority: config.WECHATY_PUPPET_SERVICE_AUTHORITY,
+            //     token: config.WORKPRO_TOKEN,
+            //     tls: {
+            //         disable: true,
+            //     },
+            // },
             // workpro 的配置option END
         });
         console.log('hello');
@@ -91,6 +92,7 @@ class Bot {
      */
     onStart() {
         console.log("开始启动机器人");
+        onCron()
     }
     // 接收消息
     async onMessage(msg) {

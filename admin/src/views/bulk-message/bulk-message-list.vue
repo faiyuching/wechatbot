@@ -46,7 +46,7 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column label="推送对象" min-width="100px" align="left">
+      <el-table-column label="推送对象" min-width="50px" align="center">
         <template slot-scope="{row}">
           <div>{{ row.group_ids.length }}</div>
         </template>
@@ -61,7 +61,7 @@
           <p class="link-desc">{{ row.post_at }}</p>
         </template>
       </el-table-column>
-      <el-table-column label="状态" min-width="100px" align="left">
+      <el-table-column label="状态" min-width="50px" align="center">
         <template slot-scope="{row}">
           <span>{{ bkStatus[row.status] }}</span>
         </template>
