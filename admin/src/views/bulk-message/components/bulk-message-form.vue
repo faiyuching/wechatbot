@@ -16,22 +16,40 @@
         </flexbox>
         <div class="crm-create-flex">
           <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="85px" style="width: 440px; margin-left:50px;">
-            <el-form-item label="关键词" prop="link_title">
-              <el-input v-model="temp.keyword" placeholder="请输入关键词" />
+            <el-form-item label="类型">
+              <el-radio-group v-model="temp.type">
+                <el-radio :label="1">群信息</el-radio>
+                <el-radio :label="2">私信</el-radio>
+              </el-radio-group>
             </el-form-item>
-            <el-form-item label="状态" prop="status">
-              <el-switch v-model="temp.status" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+            <el-form-item label="发送时间">
+              <el-date-picker
+                v-model="temp.post_at"
+                type="datetime"
+                placeholder="选择日期时间">
+              </el-date-picker>
             </el-form-item>
-            <el-form-item label="选择回复"></el-form-item>
+            <el-form-item label="选择群"></el-form-item>
+            <el-transfer
+              style="width: 600px; margin-bottom: 10px;"
+              filterable
+              :filter-method="filterGroup"
+              filter-placeholder="请输入群组名称"
+              :titles="['所有群组', '已选群组']"
+              v-model="temp.group_ids"
+              :props="{ key: 'id',label: 'name'}"
+              :data="allGroups">
+            </el-transfer>
+            <el-form-item label="选择消息"></el-form-item>
             <el-transfer
               style="width: 600px;"
               filterable
-              :filter-method="filterMethod"
+              :filter-method="filterInformation"
               filter-placeholder="请输入消息名称"
               :titles="['所有消息', '已选消息']"
-              v-model="temp.infoIds"
-              :data="allInformations"
-              :props="{ key: 'id',label: 'name'}">
+              v-model="temp.info_ids"
+              :props="{ key: 'id',label: 'name'}"
+              :data="allInformations">
             </el-transfer>
           </el-form>
         </div>
@@ -50,14 +68,15 @@
 </template>
 
 <script>
-import { fetchAutoReply, updateAutoReply, createAutoReply } from '@/api/auto_reply'
 import { fetchInformationList } from '@/api/information'
+import { fetchRoomList } from '@/api/group'
+import { fetchBulkMessage, createBulkMessage, updateBulkMessage } from '@/api/bulk_message'
 import CreateView from '../../../components/CreateView.vue'
 import settings from '@/settings'
 
 export default {
   components: { CreateView },
-  name: 'AutoReplyForm',
+  name: 'BulkMessageForm',
   props: {
     /**
      * save:添加、update:编辑(action_id)
@@ -75,8 +94,8 @@ export default {
   data() {
     return {
       textMap: {
-        update: '编辑自动回复',
-        create: '创建自动回复'
+        update: '编辑群发消息',
+        create: '创建群发消息'
       },
       rules: {
         keyword: [{ required: true, message: '必须填写关键词', trigger: 'change' }],
@@ -84,34 +103,45 @@ export default {
       },
       tableKey: 0,
       temp: {
-        id: undefined,
-        keyword: '',
-        status: true,
-        infoIds: []
+        group_ids: [],
+        info_ids: [],
+        type: 1,
+        post_at: '',
+        status: 0,
       },
       loading: false,
+      allGroups: [],
       allInformations: [],
-      filterMethod(query, item) {
+      groupName: '',
+      filterGroup(query, item) {
+        return item.name.indexOf(query) > -1;
+      },
+      filterInformation(query, item) {
         return item.name.indexOf(query) > -1;
       },
     }
   },
   created() {
+    this.loading = true
+    fetchRoomList({limit:0}).then(res => {
+      this.allGroups = res.data.items
+    }).catch((err) => {
+      this.loading = false
+    });
     fetchInformationList({limit:0}).then(res => {
       this.allInformations = res.data.items
     }).catch((err) => {
       this.loading = false
     });
     if (this.action.type == 'update') {
-      this.loading = true
       var id = this.action.id
-      fetchAutoReply(id).then(res => {
+      fetchBulkMessage(id).then(res => {
         this.temp = res.data
-        this.loading = false
       }).catch(() => {
         this.loading = false
       })
     }
+    this.loading = false
   },
   methods: {
     hidenView() {
@@ -120,13 +150,13 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          createAutoReply(this.temp).then(() => {
+          createBulkMessage(this.temp).then(() => {
             this.dialogFormVisible = false
             this.$emit('save-success')
             this.hidenView()
             this.$notify({
               title: 'Success',
-              message: '创建关键词成功',
+              message: '创建群发消息成功',
               type: 'success',
               duration: 2000
             })
@@ -138,13 +168,13 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          updateAutoReply(tempData).then(() => {
+          updateBulkMessage(tempData).then(() => {
             this.dialogFormVisible = false
             this.$emit('save-success')
             this.hidenView()
             this.$notify({
               title: 'Success',
-              message: '更新关键词成功',
+              message: '更新群发消息成功',
               type: 'success',
               duration: 2000
             })

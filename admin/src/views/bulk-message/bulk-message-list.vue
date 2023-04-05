@@ -1,18 +1,18 @@
 <template>
   <div class="app-container">
     <div class="explain">
-      <div class="title">群欢迎语</div>
-      <!-- <p class="">群员入群后，如果没有设置欢迎语，将会发送默认欢迎语。默认欢迎语不允许删除。</p> -->
+      <div class="title">群发消息</div>
+      <p class="">可一键发布消息到选定的微信群或私人</p>
+      <!-- <p class="error-color">关键词会被缓存一小时，添加或者更新请清除缓存。</p> -->
     </div>
 
     <div class="filter-container">
-      <el-input v-model="listQuery.keyword" placeholder="群名" style="width: 200px;margin-right: 10px" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        搜索
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">
         添加
       </el-button>
+      <!-- <el-button class="filter-item el-button--danger" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleClearCache">
+        清除缓存
+      </el-button> -->
     </div>
 
     <!-- 欢迎语列表页 START -->
@@ -30,44 +30,49 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="群名" min-width="100px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="消息" min-width="100px" align="left">
+      <el-table-column label="内容" min-width="200px">
         <template slot-scope="{row}">
           <el-popover
             placement="top-start"
-            :title="types[info.type]"
+            :title="types[item.type]"
             width="200"
             trigger="click"
-            v-for="info in row.infos" v-bind:key="info.id">
-            <div>{{ info.reply.text }}</div>
-            <div>{{ info.reply.title }}</div>
-            <div>{{ info.reply.description }}</div>
-            <div>{{ info.reply.url }}</div>
-            <el-tag slot="reference">{{ info.name }}</el-tag>
+            v-for="item in row.infos" v-bind:key="item.id">
+            <div>{{ item.reply.text }}</div>
+            <div>{{ item.reply.title }}</div>
+            <div>{{ item.reply.description }}</div>
+            <div>{{ item.reply.url }}</div>
+            <el-tag slot="reference">{{ item.name }}</el-tag>
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column label="状态" class-name="status-col" align="center" width="100px">
+      <el-table-column label="推送对象" min-width="100px" align="left">
         <template slot-scope="{row}">
-          <el-switch
-            :value="row.is_welcome_open ? true : false"
-            @change="handleModifyStatus(row)"
-            active-color="#13ce66"
-            inactive-color="#ff4949">
-          </el-switch>
+          <div>{{ row.group_ids.length }}</div>
         </template>
       </el-table-column>
-      <el-table-column label="动作" align="center" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="类别" class-name="status-col" align="center" width="100px">
+        <template slot-scope="{row}">
+          <span>{{ bkTypes[row.type] }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="发布时间" min-width="150px" align="left">
+        <template slot-scope="{row}">
+          <p class="link-desc">{{ row.post_at }}</p>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" min-width="100px" align="left">
+        <template slot-scope="{row}">
+          <span>{{ bkStatus[row.status] }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            清空消息
+            删除
           </el-button>
         </template>
       </el-table-column>
@@ -75,7 +80,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
     <!-- 欢迎语列表页 END -->
 
-    <welcome-form
+    <bulk-message-form
       v-if="isCreate"
       :action="createActionInfo"
       @save-success="createSaveSuccess"
@@ -83,19 +88,19 @@
     />
   </div>
 </template>
-  
+
 <script>
 import { mapGetters } from 'vuex'
-import { fetchRoomList, updateGroup } from '@/api/group'
-import { updateRoomInfo } from '@/api/room_information'
+import { fetchBulkMessageList, deleteBulkMessage } from '@/api/bulk_message'
+import { clearRedisCache } from '@/api/wechat'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import WelcomeForm from './components/welcome-form'
+import BulkMessageForm from './components/bulk-message-form'
 import settings from '@/settings'
 
 export default {
-  name: 'GroupWelcome',
-  components: { WelcomeForm, Pagination },
+  name: 'AutoReplyList',
+  components: { BulkMessageForm, Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -122,10 +127,8 @@ export default {
       isCreate: false, // 是创建
       tableHeight: document.documentElement.clientHeight - 320, // 表的高度
       types: settings.informationTypes,
-      temp: {
-        room_id: undefined,
-        infoIds: [],
-      },
+      bkTypes: settings.bulkMessageTypes,
+      bkStatus: settings.bulkMessageStatus,
     }
   },
   created() {
@@ -140,28 +143,10 @@ export default {
       if (!this.listQuery.keyword) {
         this.listQuery.keyword = undefined
       }
-      fetchRoomList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
+      fetchBulkMessageList(this.listQuery).then(res => {
+        this.list = res.data.items
+        this.total = res.data.total
         this.listLoading = false
-      })
-    },
-    handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
-    },
-    handleModifyStatus(row) {
-      let is_welcome_open = row.is_welcome_open ? 0 : 1
-      updateGroup({
-        id: row.id, is_welcome_open
-      }).then(() => {
-        row.is_welcome_open = is_welcome_open
-        this.$notify({
-          title: '成功',
-          message: '更新状态成功',
-          type: 'success',
-          duration: 2000,
-        })
       })
     },
     createSaveSuccess() {
@@ -185,15 +170,38 @@ export default {
           type: 'warning'
         })
           .then(() => {
-            this.temp.room_id = row.id
-            updateRoomInfo(this.temp).then(() => {
+            deleteBulkMessage(row.id).then(() => {
               this.$notify({
                 title: '成功',
                 message: '删除成功！',
                 type: 'success',
                 duration: 2000
               })
-              this.list[index].infos = []
+              this.list.splice(index, 1)
+            })
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消操作'
+            })
+          })
+    },
+    handleClearCache(row, index) {
+        this.$confirm('确定要所有缓存吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            clearRedisCache().then(() => {
+              this.$notify({
+                title: '成功',
+                message: '清除成功！',
+                type: 'success',
+                duration: 2000
+              })
+              this.list.splice(index, 1)
             })
           })
           .catch(() => {
@@ -231,6 +239,9 @@ export default {
 .filter-container {
     padding-bottom: 10px;
 }
+.nickname {
+  color: #f56c6c;
+}
 .not-img {
   color: #c0c4cc;
 }
@@ -252,10 +263,6 @@ export default {
       margin: 5px 0;
     }
   }
-}
-
-.el-popover{
-  margin-right: 10px;
 }
 
 .el-tag{

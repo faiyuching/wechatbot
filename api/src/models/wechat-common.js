@@ -298,6 +298,48 @@ const WechatRoomInformation = db.define('WechatRoomInformation', {
         }
     ],
 });
+/**
+ * 群发消息
+ */
+const WechatBulkMessage = db.define('WechatBulkMessage', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
+    info_ids: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    group_ids: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    type: {
+        type: DataTypes.ENUM,
+        values: [1, 2],
+        defaultValue: 1,
+    },
+    status: {
+        type: DataTypes.ENUM,
+        values: [0, 1, 2],
+        defaultValue: 0,
+    },
+    post_at: {
+        type: DataTypes.DATE,
+    },
+    created_at: {
+        type: DataTypes.DATE,
+    },
+    updated_at: {
+        type: DataTypes.DATE,
+    },
+}, {
+    tableName: 'wechat_bulk_message',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+});
 export { WechatRoom };
 export { WechatKeyword };
 export { WechatInformation };
@@ -306,6 +348,7 @@ export { WechatInformationTag };
 export { WechatAutoReply };
 export { WechatAutoReplyInformation };
 export { WechatRoomInformation };
+export { WechatBulkMessage };
 export default {
     WechatRoom,
     WechatKeyword,
@@ -315,4 +358,5 @@ export default {
     WechatAutoReply,
     WechatAutoReplyInformation,
     WechatRoomInformation,
+    WechatBulkMessage,
 };

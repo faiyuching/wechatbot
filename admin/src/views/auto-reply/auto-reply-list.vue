@@ -283,6 +283,8 @@ export default {
       margin: 5px 0;
     }
   }
-
+}
+.el-tag{
+  margin-right: 10px;
 }
 </style>

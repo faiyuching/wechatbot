@@ -112,6 +112,12 @@ export const constantRoutes = [
         name: 'GroupWelcome',
         component: () => import('@/views/group/group-welcome'),
         meta: { title: '入群欢迎语', icon: 'friend-welcome' }
+      },
+      {
+        path: 'bulk-message',
+        name: 'BulkMessage',
+        component: () => import('@/views/bulk-message/bulk-message-list'),
+        meta: { title: '群发消息', icon: 'bulk-message' }
       }
     ]
   },
