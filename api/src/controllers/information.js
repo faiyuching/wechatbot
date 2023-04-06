@@ -118,19 +118,21 @@ export const listInformation = async (req, res, next) => {
             var items = await WechatInformation.findAll({
                 where, limit, offset,
             });
+            var total = await WechatInformation.count({ where });
         }
         items = items.map(processKeyword);
-        var total = await WechatInformation.count({ where });
-        for(var i = 0; i < items.length; i++){
-            let where = {};
-            where.information_id = items[i].id;
-            var rels = await WechatInformationTag.findAll({ where });
-            var tags = []
-            for(var j = 0; j < rels.length; j++){
-                var tag = await WechatTag.findByPk(rels[j].tag_id);
-                tags.push(tag)
+        if(req.query.limit != 0){
+            for(var i = 0; i < items.length; i++){
+                let where = {};
+                where.information_id = items[i].id;
+                var rels = await WechatInformationTag.findAll({ where });
+                var tags = []
+                for(var j = 0; j < rels.length; j++){
+                    var tag = await WechatTag.findByPk(rels[j].tag_id);
+                    tags.push(tag)
+                }
+                items[i].dataValues.tags = tags
             }
-            items[i].dataValues.tags = tags
         }
         var data = { items, total };
     }

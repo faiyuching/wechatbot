@@ -55,8 +55,8 @@ export const listContact = async (req, res, next) => {
                 where, limit, offset,
                 include: UserInfo,
             });
+            var total = await WechatContact.count({ where });
         }
-        var total = await WechatContact.count({ where });
         var data = { items, total };
     }
     catch (error) {

@@ -230,19 +230,21 @@ export const listRoom = async (req, res, next) => {
                 where, limit, offset,
                 include: Group
             });
+            var total = await WechatRoom.count({ where });
         }
-        var total = await WechatRoom.count({ where });
-        for(var i = 0; i < items.length; i++){
-            let where = {};
-            where.room_id = items[i].id;
-            var rels = await WechatRoomInformation.findAll({ where });
-            var infos = []
-            for(var j = 0; j < rels.length; j++){
-                var info = await WechatInformation.findByPk(rels[j].information_id);
-                info.reply = JSON.parse(info.reply)
-                infos.push(info)
+        if(req.query.limit != 0){
+            for(var i = 0; i < items.length; i++){
+                let where = {};
+                where.room_id = items[i].id;
+                var rels = await WechatRoomInformation.findAll({ where });
+                var infos = []
+                for(var j = 0; j < rels.length; j++){
+                    var info = await WechatInformation.findByPk(rels[j].information_id);
+                    info.reply = JSON.parse(info.reply)
+                    infos.push(info)
+                }
+                items[i].dataValues.infos = infos
             }
-            items[i].dataValues.infos = infos
         }
         var data = { items, total };
     }
