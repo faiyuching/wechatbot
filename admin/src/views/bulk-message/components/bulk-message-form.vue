@@ -29,8 +29,9 @@
                 placeholder="选择日期时间">
               </el-date-picker>
             </el-form-item>
-            <el-form-item label="选择群"></el-form-item>
+            <el-form-item v-if="temp.type == 1" label="选择群"></el-form-item>
             <el-transfer
+              v-if="temp.type == 1"
               style="width: 600px; margin-bottom: 10px;"
               filterable
               :filter-method="filterGroup"
@@ -39,6 +40,18 @@
               v-model="temp.group_ids"
               :props="{ key: 'id',label: 'name'}"
               :data="allGroups">
+            </el-transfer>
+            <el-form-item v-if="temp.type == 2" label="选择联系人"></el-form-item>
+            <el-transfer
+              v-if="temp.type == 2"
+              style="width: 600px; margin-bottom: 10px;"
+              filterable
+              :filter-method="filterContact"
+              filter-placeholder="请输入联系人名称"
+              :titles="['所有联系人', '已选联系人']"
+              v-model="temp.group_ids"
+              :props="{ key: 'id',label: 'name'}"
+              :data="allContacts">
             </el-transfer>
             <el-form-item label="选择消息"></el-form-item>
             <el-transfer
@@ -70,6 +83,7 @@
 <script>
 import { fetchInformationList } from '@/api/information'
 import { fetchRoomList } from '@/api/group'
+import { fetchContactList } from '@/api/contact'
 import { fetchBulkMessage, createBulkMessage, updateBulkMessage } from '@/api/bulk_message'
 import CreateView from '../../../components/CreateView.vue'
 import settings from '@/settings'
@@ -103,8 +117,8 @@ export default {
       },
       tableKey: 0,
       temp: {
-        group_ids: [],
         info_ids: [],
+        group_ids: [],
         type: 1,
         post_at: '',
         status: 0,
@@ -112,11 +126,15 @@ export default {
       loading: false,
       allGroups: [],
       allInformations: [],
+      allContacts: [],
       groupName: '',
       filterGroup(query, item) {
         return item.name.indexOf(query) > -1;
       },
       filterInformation(query, item) {
+        return item.name.indexOf(query) > -1;
+      },
+      filterContact(query, item) {
         return item.name.indexOf(query) > -1;
       },
     }
@@ -130,6 +148,11 @@ export default {
     });
     fetchInformationList({limit:0}).then(res => {
       this.allInformations = res.data.items
+    }).catch((err) => {
+      this.loading = false
+    });
+    fetchContactList({limit:0}).then(res => {
+      this.allContacts = res.data.items
     }).catch((err) => {
       this.loading = false
     });

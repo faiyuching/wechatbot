@@ -25,7 +25,6 @@ export function createBulkMessage(data) {
 }
 
 export function updateBulkMessage(data) {
-  console.log(data)
   return request({
     url: '/bulk_message/updateBulkMessage',
     method: 'post',

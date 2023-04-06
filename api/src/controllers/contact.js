@@ -48,10 +48,14 @@ export const listContact = async (req, res, next) => {
         let limit = req.query.limit ? parseInt(req.query.limit) : 10;
         let page = req.query.page ? parseInt(req.query.page) : 1;
         let offset = (page - 1) * limit;
-        var items = await WechatContact.findAll({
-            where, limit, offset,
-            include: UserInfo,
-        });
+        if(req.query.limit == 0){
+            var items = await WechatContact.findAll({ where });
+        }else{
+            var items = await WechatContact.findAll({
+                where, limit, offset,
+                include: UserInfo,
+            });
+        }
         var total = await WechatContact.count({ where });
         var data = { items, total };
     }
