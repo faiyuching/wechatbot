@@ -1,5 +1,5 @@
 import { FileBox } from 'file-box';
-import { WechatKeyword } from "../models/wechat-common.js";
+import { WechatKeyword, WechatRoom } from "../models/wechat-common.js";
 import { pushJob } from "../util/queue.js";
 import { redisClient } from "../util/redis.js";
 import Bot from '../bot.js';
