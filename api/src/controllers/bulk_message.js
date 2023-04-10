@@ -50,7 +50,7 @@ export const listBulkMessage = async (req, res, next) => {
         let page = req.query.page ? parseInt(req.query.page) : 1;
         let offset = (page - 1) * limit;
         var items = await WechatBulkMessage.findAll({
-            where, limit, offset,
+            where, limit, offset, order: [['created_at', 'DESC']]
         });
         // items = items.map(processKeyword);
         var total = await WechatBulkMessage.count({ where });

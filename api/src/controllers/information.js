@@ -118,10 +118,10 @@ export const listInformation = async (req, res, next) => {
         let page = req.query.page ? parseInt(req.query.page) : 1;
         let offset = (page - 1) * limit;
         if(req.query.limit == 0){
-            var items = await WechatInformation.findAll({ where });
+            var items = await WechatInformation.findAll({ where, order: [['created_at', 'DESC']] });
         }else{
             var items = await WechatInformation.findAll({
-                where, limit, offset,
+                where, limit, offset, order: [['created_at', 'DESC']]
             });
             var total = await WechatInformation.count({ where });
         }
