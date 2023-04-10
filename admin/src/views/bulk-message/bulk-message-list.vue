@@ -58,7 +58,7 @@
       </el-table-column>
       <el-table-column label="状态" min-width="50px" align="center">
         <template slot-scope="{row}">
-          <span>{{ bkStatus[row.status] }}</span>
+          <span :style="'color:'+ bkColor[row.status]">{{ bkStatus[row.status] }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
@@ -123,6 +123,7 @@ export default {
       tableHeight: document.documentElement.clientHeight - 320, // 表的高度
       types: settings.informationTypes,
       bkStatus: settings.bulkMessageStatus,
+      bkColor: settings.bulkMessageColor,
     }
   },
   created() {

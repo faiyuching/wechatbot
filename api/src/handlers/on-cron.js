@@ -2,8 +2,7 @@ import Bot from "../bot.js";
 import cron from "node-cron";
 import { Op } from "sequelize";
 import { WechatBulkMessage, WechatInformation, WechatRoom } from "../models/wechat-common.js";
-import { privateSay, groupSay } from "../service/index.js";
-import { WechatContact } from "../models/wechat.js";
+import { groupSay } from "../service/index.js";
 
 /**
  * 好友添加
@@ -24,8 +23,16 @@ async function onCron() {
                 where = {};
                 where.id = messages[i].info_ids;
                 var informations = await WechatInformation.findAll({ where });
-                informations.forEach(information => {
-                    groupSay(room, information)
+                informations.forEach(async information => {
+                    where = {}
+                    where.id = messages[i].id
+                    try {
+                        groupSay(room, information)
+                        await WechatBulkMessage.update({ status: 1 }, { where });
+                    }
+                    catch (error) {
+                        await WechatBulkMessage.update({ status: 2 }, { where });
+                    }
                 });
             });
         }
