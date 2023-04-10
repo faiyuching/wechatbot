@@ -16,12 +16,6 @@
         </flexbox>
         <div class="crm-create-flex">
           <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="85px" style="width: 440px; margin-left:50px;">
-            <el-form-item label="类型">
-              <el-radio-group v-model="temp.type">
-                <el-radio :label="1">群信息</el-radio>
-                <el-radio :label="2">私信</el-radio>
-              </el-radio-group>
-            </el-form-item>
             <el-form-item label="发送时间">
               <el-date-picker
                 v-model="temp.post_at"
@@ -29,10 +23,9 @@
                 placeholder="选择日期时间">
               </el-date-picker>
             </el-form-item>
-            <el-form-item v-if="temp.type == 1" label="选择群"></el-form-item>
+            <el-form-item label="选择群"></el-form-item>
             <el-transfer
-              v-if="temp.type == 1"
-              style="width: 600px; margin-bottom: 10px;"
+              style="width: 600px; margin-bottom: 20px;"
               filterable
               :filter-method="filterGroup"
               filter-placeholder="请输入群组名称"
@@ -40,18 +33,6 @@
               v-model="temp.group_ids"
               :props="{ key: 'id',label: 'name'}"
               :data="allGroups">
-            </el-transfer>
-            <el-form-item v-if="temp.type == 2" label="选择联系人"></el-form-item>
-            <el-transfer
-              v-if="temp.type == 2"
-              style="width: 600px; margin-bottom: 10px;"
-              filterable
-              :filter-method="filterContact"
-              filter-placeholder="请输入联系人名称"
-              :titles="['所有联系人', '已选联系人']"
-              v-model="temp.group_ids"
-              :props="{ key: 'id',label: 'name'}"
-              :data="allContacts">
             </el-transfer>
             <el-form-item label="选择消息"></el-form-item>
             <el-transfer
@@ -83,7 +64,6 @@
 <script>
 import { fetchInformationList } from '@/api/information'
 import { fetchRoomList } from '@/api/group'
-import { fetchContactList } from '@/api/contact'
 import { fetchBulkMessage, createBulkMessage, updateBulkMessage } from '@/api/bulk_message'
 import CreateView from '../../../components/CreateView.vue'
 import settings from '@/settings'
@@ -119,7 +99,6 @@ export default {
       temp: {
         info_ids: [],
         group_ids: [],
-        type: 1,
         post_at: '',
         status: 0,
       },
@@ -134,9 +113,6 @@ export default {
       filterInformation(query, item) {
         return item.name.indexOf(query) > -1;
       },
-      filterContact(query, item) {
-        return item.name.indexOf(query) > -1;
-      },
     }
   },
   created() {
@@ -148,11 +124,6 @@ export default {
     });
     fetchInformationList({limit:0}).then(res => {
       this.allInformations = res.data.items
-    }).catch((err) => {
-      this.loading = false
-    });
-    fetchContactList({limit:0}).then(res => {
-      this.allContacts = res.data.items
     }).catch((err) => {
       this.loading = false
     });

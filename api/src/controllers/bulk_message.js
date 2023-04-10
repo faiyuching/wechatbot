@@ -6,7 +6,6 @@ import { Op } from "sequelize";
 import { processKeyword } from "../util/wechat.js";
 const { body, validationResult, oneOf, query } = expressValidator;
 const bulkMessageOption = [
-    body('type').optional({ nullable: true }).isIn([1, 2]),
     body('status').optional({ nullable: true }).isIn([0, 1, 2, true, false]),
 ];
 export const validate = {

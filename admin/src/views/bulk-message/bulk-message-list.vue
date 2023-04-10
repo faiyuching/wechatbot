@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="explain">
       <div class="title">群发消息</div>
-      <p class="">可一键发布消息到选定的微信群或私人</p>
+      <p class="">可一键发布消息到选定的微信群</p>
       <!-- <p class="error-color">关键词会被缓存一小时，添加或者更新请清除缓存。</p> -->
     </div>
 
@@ -49,11 +49,6 @@
       <el-table-column label="推送对象" min-width="50px" align="center">
         <template slot-scope="{row}">
           <div>{{ row.group_ids.length }}</div>
-        </template>
-      </el-table-column>
-      <el-table-column label="类别" class-name="status-col" align="center" width="100px">
-        <template slot-scope="{row}">
-          <span>{{ bkTypes[row.type] }}</span>
         </template>
       </el-table-column>
       <el-table-column label="发布时间" min-width="150px" align="left">
@@ -127,7 +122,6 @@ export default {
       isCreate: false, // 是创建
       tableHeight: document.documentElement.clientHeight - 320, // 表的高度
       types: settings.informationTypes,
-      bkTypes: settings.bulkMessageTypes,
       bkStatus: settings.bulkMessageStatus,
     }
   },

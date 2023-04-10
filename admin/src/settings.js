@@ -46,13 +46,6 @@ module.exports = {
   /**
    * 群发消息类型
    */
-  bulkMessageTypes: {
-    1: "群消息",
-    2: "私信",
-  },
-  /**
-   * 群发消息类型
-   */
   bulkMessageStatus: {
     0: "待发",
     1: "已发",

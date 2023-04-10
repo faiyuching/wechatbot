@@ -315,11 +315,6 @@ const WechatBulkMessage = db.define('WechatBulkMessage', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    type: {
-        type: DataTypes.ENUM,
-        values: [1, 2],
-        defaultValue: 1,
-    },
     status: {
         type: DataTypes.ENUM,
         values: [0, 1, 2],
