@@ -124,6 +124,11 @@ export default {
     });
     fetchInformationList({limit:0}).then(res => {
       this.allInformations = res.data.items
+      this.allInformations.forEach(info => {
+        if(info.type == 3){
+          info.disabled = true
+        }
+      });
     }).catch((err) => {
       this.loading = false
     });
