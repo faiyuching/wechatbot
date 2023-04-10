@@ -60,6 +60,11 @@ export const validate = {
         body('name').notEmpty().exists().withMessage('名称不能为空！'),
         ...informationOption,
     ],
+    duplicateInformation: [
+        body('id', 'ID必须为整数！').exists().isInt(),
+        body('name').notEmpty().exists().withMessage('名称不能为空！'),
+        ...informationOption,
+    ],
     updateInformation: [
         oneOf([
             body('id', 'ID必须为整数！').exists().isInt(),
@@ -314,5 +319,38 @@ export const setFriendWelcome = async (req, res, next) => {
         return res.json(res_data(null, -1, error.toString()));
     }
 
+    return res.json(res_data());
+};
+
+export const duplicateInformation = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.json(res_data(errors, -1, errors.errors[0].msg));
+    }
+
+    // 重命名消息
+    let newName = req.body.name;
+    let suffix = 0;
+    while (true) {
+        const existingInformation = await WechatInformation.findOne({where: {name: newName}});
+        if (!existingInformation) {
+        break;
+        }
+        suffix++;
+        newName = req.body.name + " 副本" + suffix;
+    }
+    req.body.name = newName;
+    req.body.id = null;
+    req.body.reply = JSON.parse(req.body.reply)
+    req.body.is_friend_welcome = 0
+    req.body.created_at = Date.now() 
+    req.body.updated_at = Date.now() 
+
+    try {
+        await WechatInformation.create(req.body);
+    }
+    catch (error) {
+        return res.json(res_data(null, -1, error.toString()));
+    }
     return res.json(res_data());
 };

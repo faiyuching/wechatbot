@@ -24,6 +24,14 @@ export function createInformation(data) {
   })
 }
 
+export function duplicateInformation(data) {
+  return request({
+    url: '/information/duplicateInformation',
+    method: 'post',
+    data
+  })
+}
+
 export function updateInformation(data) {
   return request({
     url: '/information/updateInformation',

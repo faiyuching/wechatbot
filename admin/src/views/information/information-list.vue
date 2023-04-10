@@ -49,13 +49,16 @@
           <p class="link-desc">{{ row.created_at }}</p>
         </template>
       </el-table-column> -->
-      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="250" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
+          </el-button>
+          <el-button size="mini" type="success" @click="handleDuplicate(row)">
+            复制
           </el-button>
         </template>
       </el-table-column>
@@ -74,7 +77,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { fetchInformationList, updateInformation, deleteInformation } from '@/api/information'
+import { fetchInformationList, updateInformation, deleteInformation, duplicateInformation } from '@/api/information'
 import { clearRedisCache } from '@/api/wechat'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -157,6 +160,17 @@ export default {
     handleCreate() {
       this.createActionInfo = { type: 'create' }
       this.isCreate = true
+    },
+    handleDuplicate(row) {
+      duplicateInformation(row).then(() => {
+        this.$notify({
+          title: 'Success',
+          message: '复制消息成功',
+          type: 'success',
+          duration: 2000
+        })
+        this.getList()
+      })
     },
     handleUpdate(row) {
       this.createActionInfo = { type: 'update', id: row.id }
