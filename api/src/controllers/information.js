@@ -334,7 +334,7 @@ export const duplicateInformation = async (req, res, next) => {
     while (true) {
         const existingInformation = await WechatInformation.findOne({where: {name: newName}});
         if (!existingInformation) {
-        break;
+            break;
         }
         suffix++;
         newName = req.body.name + " 副本" + suffix;

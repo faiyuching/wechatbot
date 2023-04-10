@@ -128,17 +128,17 @@ export const constantRoutes = [
     name: 'Contact',
     meta: { title: '通讯录', icon: 'contact-manage' },
     children: [
-      {
-        path: 'index',
-        name: 'ContactList',
-        component: () => import('@/views/contact/contact-list'),
-        meta: { title: '联系人', icon: 'contact-list' }
-      },
+      // {
+      //   path: 'index',
+      //   name: 'ContactList',
+      //   component: () => import('@/views/contact/contact-list'),
+      //   meta: { title: '联系人', icon: 'contact-list' }
+      // },
       {
         path: 'group',
         name: 'GroupList',
         component: () => import('@/views/group/group-list'),
-        meta: { title: '微信群', icon: 'room' }
+        meta: { title: '群组列表', icon: 'room' }
       },
     ]
   },
