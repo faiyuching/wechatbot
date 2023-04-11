@@ -139,13 +139,15 @@ export const updateAutoReply = async (req, res, next) => {
     }
     try {
         await WechatAutoReply.update({ ...req.body }, { where });
-        var auto_reply_id = req.body.id
-        where = {}
-        where.auto_reply_id = auto_reply_id
-        await WechatAutoReplyInformation.destroy({ where });
-        for(let i = 0; i < req.body.infoIds.length; i++){
-            var information_id = req.body.infoIds[i];
-            await WechatAutoReplyInformation.create({ auto_reply_id, information_id });
+        if(req.body.infoIds){
+            var auto_reply_id = req.body.id
+            where = {}
+            where.auto_reply_id = auto_reply_id
+            await WechatAutoReplyInformation.destroy({ where });
+            for(let i = 0; i < req.body.infoIds.length; i++){
+                var information_id = req.body.infoIds[i];
+                await WechatAutoReplyInformation.create({ auto_reply_id, information_id });
+            }
         }
     }
     catch (error) {
