@@ -39,11 +39,11 @@
           <span class="">{{ types[row.type] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="标签" min-width="100px" align="left">
+      <!-- <el-table-column label="标签" min-width="100px" align="left">
         <template slot-scope="{row}">
           <el-tag v-for="item in row.tags" v-bind:key="item.id">{{ item.value }}</el-tag>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <!-- <el-table-column label="添加时间" min-width="75px" align="left">
         <template slot-scope="{row}">
           <p class="link-desc">{{ row.created_at }}</p>

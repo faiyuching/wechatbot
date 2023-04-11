@@ -63,11 +63,11 @@
               :props="{ key: 'id',label: 'name'}"
               :data="allGroups">
             </el-transfer>
-            <el-form-item label="标签">
+            <!-- <el-form-item label="标签">
 							<el-autocomplete v-if="tagInputVisible" size="small" v-model="tagInput" ref="saveTagInput" :fetch-suggestions="querySearch" placeholder="回车创建新标签" @select="handleTagSelect" @change="handleTagChange"></el-autocomplete>
 							<el-button v-else size="small" @click="showInput">+ 添加标签</el-button><br>
 							<el-tag :key="tag.id" v-for="tag in temp.tags" closable  @close="handleTagClose(tag)">{{tag.value}}</el-tag>
-            </el-form-item>
+            </el-form-item> -->
           </el-form>
         </div>
 
