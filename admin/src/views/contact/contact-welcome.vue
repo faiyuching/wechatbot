@@ -14,6 +14,7 @@
             :filter-method="filterMethod"
             filter-placeholder="请输入消息名称"
             :titles="['所有消息', '已选消息']"
+            target-order="push"
             v-model="temp.infoIds"
             :data="allInformations"
             :props="{ key: 'id',label: 'name'}">

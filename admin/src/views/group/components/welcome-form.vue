@@ -24,6 +24,7 @@
               :filter-method="filterGroup"
               filter-placeholder="请输入群组名称"
               :titles="['所有群组', '已选群组']"
+              target-order="push"
               v-model="temp.roomIds"
               :props="{ key: 'id',label: 'name'}"
               :data="allGroups">
@@ -36,6 +37,7 @@
               :filter-method="filterInformation"
               filter-placeholder="请输入消息名称"
               :titles="['所有消息', '已选消息']"
+              target-order="push"
               v-model="temp.infoIds"
               :data="allInformations"
               :props="{ key: 'id',label: 'name'}">

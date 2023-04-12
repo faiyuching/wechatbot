@@ -59,6 +59,7 @@
               :filter-method="filterMethod"
               filter-placeholder="请输入群组名称"
               :titles="['所有群组', '已选群组']"
+              target-order="push"
               v-model="temp.reply.groupIds"
               :props="{ key: 'id',label: 'name'}"
               :data="allGroups">
