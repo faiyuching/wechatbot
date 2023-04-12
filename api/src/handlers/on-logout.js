@@ -8,7 +8,7 @@ async function onLogout(user) {
         msgtype: "text",
         text: {
             content: "小澜登出了！请访问管理后台重新登录",
-            mentioned_list: ["KaoLaWu","YuQing","ZuoQiaoXiaoCuo"],
+            mentioned_list: ["XiaoLan","YuQing"],
         }
     })
     .then(res => {
