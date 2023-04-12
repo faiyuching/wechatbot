@@ -30,7 +30,7 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="内容" min-width="200px">
+      <el-table-column label="消息" min-width="200px">
         <template slot-scope="{row}">
           <el-popover
             placement="top-start"
