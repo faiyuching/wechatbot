@@ -8,18 +8,34 @@ import { processContact } from "../util/wechat.js";
 async function initAllRoomData() {
     var items = await Bot.getInstance().Room.findAll();
     try {
-        var data = items.map(item => {
-            let { payload } = item;
-            return {
-                room_ident: payload.id,
-                name: payload.topic,
-                is_welcome_open: 1
-            };
-        });
-        WechatRoom.bulkCreate(data, {
-            fields: Object.keys(data[0]),
-            updateOnDuplicate: ["name"]
-        });
+        for(let i = 0; i < items.length; i++){
+            let where = {}
+            where.room_ident = items[i].id
+            var group = await WechatRoom.findOne({ where });
+            if(group){
+                if(group.name != items[i].payload.topic){
+                    await WechatRoom.update({ name: items[i].payload.topic },{ where })
+                }
+            }else{
+                await WechatRoom.create({
+                    name: items[i].payload.topic,
+                    room_ident: items[i].id,
+                    is_welcome_open: 1
+                });
+            }
+        }
+        // var data = items.map(item => {
+        //     let { payload } = item;
+        //     return {
+        //         room_ident: payload.id,
+        //         name: payload.topic,
+        //         is_welcome_open: 1
+        //     };
+        // });
+        // WechatRoom.bulkCreate(data, {
+        //     fields: Object.keys(data[0]),
+        //     updateOnDuplicate: ["name"]
+        // });
     }
     catch (error) {
         console.log(`同步群组出错: ${error.toString()}`);
