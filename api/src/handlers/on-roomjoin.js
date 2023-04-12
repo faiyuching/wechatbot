@@ -17,7 +17,7 @@ async function onRoomjoin(room, inviteeList, inviter, date) {
     if(r.is_welcome_open){
         where = {}
         where.room_id = r.id
-        var items = await WechatRoomInformation.findAll({ where });
+        var items = await WechatRoomInformation.findAll({ where, order: [['id', 'ASC']] });
         for(let i = 0; i < items.length; i++){
             var information = await WechatInformation.findByPk(items[i].information_id);
             information.reply = information.reply.replace('{{username}}', nameList);

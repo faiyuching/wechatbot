@@ -84,7 +84,7 @@ async function keywordsMsg({ that, msg, contact, config }) {
     if(AutoReply) {
         console.log(`精确匹配到关键词${msg},正在回复用户`);
         var rels = await WechatAutoReplyInformation.findAll({
-            where: { auto_reply_id: AutoReply.id }
+            where: { auto_reply_id: AutoReply.id }, order: [['id', 'ASC']]
         });
         for( let i = 0; i < rels.length; i++ ){
             var information = await WechatInformation.findByPk(rels[i].information_id);

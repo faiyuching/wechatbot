@@ -63,7 +63,7 @@ export const listAutoReply = async (req, res, next) => {
         for(var i = 0; i < items.length; i++){
             let where = {};
             where.auto_reply_id = items[i].id;
-            var rels = await WechatAutoReplyInformation.findAll({ where });
+            var rels = await WechatAutoReplyInformation.findAll({ where, order: [['id', 'ASC']] });
             var infos = []
             for(var j = 0; j < rels.length; j++){
                 var info = await WechatInformation.findByPk(rels[j].information_id);
@@ -90,7 +90,7 @@ export const findAutoReply = async (req, res, next) => {
             data = processKeyword(data);
             let where = {};
             where.auto_reply_id = req.query.id;
-            var rels = await WechatAutoReplyInformation.findAll({ where });
+            var rels = await WechatAutoReplyInformation.findAll({ where, order: [['id', 'ASC']] });
             var infoIds = []
             for(var j = 0; j < rels.length; j++){
                 var info = await WechatInformation.findByPk(rels[j].information_id);

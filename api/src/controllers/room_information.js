@@ -33,7 +33,7 @@ export const listRoomInformation = async (req, res, next) => {
         where.room_id = req.query.room_id;
     }
     try {
-        var items = await WechatRoomInformation.findAll({ where });
+        var items = await WechatRoomInformation.findAll({ where, order: [['id', 'ASC']] });
         var data = { items };
     }
     catch (error) {
