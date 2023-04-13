@@ -236,7 +236,7 @@ export const listRoom = async (req, res, next) => {
             for(var i = 0; i < items.length; i++){
                 let where = {};
                 where.room_id = items[i].id;
-                var rels = await WechatRoomInformation.findAll({ where });
+                var rels = await WechatRoomInformation.findAll({ where, order: [['id', 'ASC']] });
                 var infos = []
                 for(var j = 0; j < rels.length; j++){
                     var info = await WechatInformation.findByPk(rels[j].information_id);
