@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@666666/wechaty-puppet-padlocal": "^1.20.4",
+    "@alicloud/sms-sdk": "^1.1.6",
     "axios": "0.18.1",
     "chart.js": "^3.9.1",
     "chartjs-node-canvas": "^4.1.6",
