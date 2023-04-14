@@ -21,12 +21,12 @@ async function onLogout(user) {
     }).then(result => {
         let {Code} = result;
         if (Code == 'OK') {
-            console.log("通知小澜机器人掉线成功!")
+            console.log("短信通知小澜机器人掉线成功!")
         }else{
             console.log("result: ", result)
         }
     }).catch(err => {
-        console.log("通知小澜机器人掉线失败!", err)
+        console.log("短信通知小澜机器人掉线失败!", err)
     })
     // 发送企业微信通知
     axios.post('https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=8d3a65d0-bb6b-4bb4-96d7-7741b235cc71', {
@@ -37,10 +37,10 @@ async function onLogout(user) {
         }
     })
     .then(res => {
-        console.log("通知小澜机器人掉线成功!")
+        console.log("企业微信通知小澜机器人掉线成功!")
     })
     .catch(error => {
-        console.log("通知小澜机器人掉线失败!", error)
+        console.log("企业微信通知小澜机器人掉线失败!", error)
     })
 }
 export default onLogout;
