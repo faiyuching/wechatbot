@@ -10,6 +10,15 @@
       <el-button class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">
         添加
       </el-button>
+      <el-switch
+        style="margin-left: 20px;"
+        v-model="is_send_msg_to_room"
+        active-color="#13ce66"
+        inactive-color="#ff4949"
+        active-text="开启群消息"
+        inactive-text="关闭群消息"
+        @change="handleSwitch">
+      </el-switch>
       <!-- <el-button class="filter-item el-button--danger" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleClearCache">
         清除缓存
       </el-button> -->
@@ -87,11 +96,13 @@
 <script>
 import { mapGetters } from 'vuex'
 import { fetchBulkMessageList, deleteBulkMessage } from '@/api/bulk_message'
+import { fetchSendMsgToRoom, updateSendMsgToRoom } from '@/api/message'
 import { clearRedisCache } from '@/api/wechat'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import BulkMessageForm from './components/bulk-message-form'
 import settings from '@/settings'
+import { Tree } from 'element-ui'
 
 export default {
   name: 'AutoReplyList',
@@ -124,6 +135,7 @@ export default {
       types: settings.informationTypes,
       bkStatus: settings.bulkMessageStatus,
       bkColor: settings.bulkMessageColor,
+      is_send_msg_to_room: null,
     }
   },
   created() {
@@ -142,6 +154,9 @@ export default {
         this.list = res.data.items
         this.total = res.data.total
         this.listLoading = false
+      })
+      fetchSendMsgToRoom().then(res => {
+        this.is_send_msg_to_room = res.data.is_send_msg_to_room ? true : false
       })
     },
     createSaveSuccess() {
@@ -205,6 +220,16 @@ export default {
               message: '已取消操作'
             })
           })
+    },
+    handleSwitch(value){
+      updateSendMsgToRoom({is_send_msg_to_room: value}).then(() => {
+        this.$notify({
+          title: 'Success',
+          message: '更新成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
     },
   }
 }

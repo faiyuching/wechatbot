@@ -1,5 +1,6 @@
 import * as express from "express";
 import * as msgController from "../controllers/message.js";
+import auth from "../util/auth.js";
 const router = express.Router();
 /**
  * 消息发送请求体
@@ -50,4 +51,6 @@ router.post('/sendMsgToRoom', msgController.validate.sendMsgToRoom, msgControlle
  * }
  */
 router.post('/sendMsgToGroup', msgController.validate.sendMsgToGroup, msgController.sendMsgToGroup);
+router.get('/findSendMsgToRoom', auth.required, msgController.findSendMsgToRoom);
+router.post('/updateSendMsgToRoom', auth.required, msgController.updateSendMsgToRoom);
 export default router;

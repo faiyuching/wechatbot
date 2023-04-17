@@ -335,6 +335,26 @@ const WechatBulkMessage = db.define('WechatBulkMessage', {
     createdAt: 'created_at',
     updatedAt: 'updated_at',
 });
+/**
+ * 群发消息开关
+ */
+const WechatSendMsgToRoom = db.define('WechatSendMsgToRoom', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
+    is_send_msg_to_room: {
+        type: DataTypes.ENUM,
+        values: [0, 1],
+        defaultValue: 0,
+    },
+}, {
+    tableName: 'wechat_send_msg_to_room',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+});
 export { WechatRoom };
 export { WechatKeyword };
 export { WechatInformation };
@@ -344,6 +364,7 @@ export { WechatAutoReply };
 export { WechatAutoReplyInformation };
 export { WechatRoomInformation };
 export { WechatBulkMessage };
+export { WechatSendMsgToRoom };
 export default {
     WechatRoom,
     WechatKeyword,
@@ -354,4 +375,5 @@ export default {
     WechatAutoReplyInformation,
     WechatRoomInformation,
     WechatBulkMessage,
+    WechatSendMsgToRoom,
 };

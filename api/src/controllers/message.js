@@ -2,10 +2,11 @@ import Bot from "../bot.js";
 import * as expressValidator from "express-validator";
 import { res_data } from "../util/server.js";
 import { WechatRoom } from "../models/wechat.js";
+import { WechatSendMsgToRoom } from "../models/wechat-common.js";
 import { pushJob } from "../util/queue.js";
 import { msgArr } from "../util/lib.js";
 import { roomSay } from "../service/index.js";
-const { body, validationResult } = expressValidator;
+const { body, validationResult, oneOf, query } = expressValidator;
 export const validate = {
     sendMsgToRoom: [
         body('group_name', '发送消息给微信群，必须指定微信群名称！').exists(),
@@ -17,11 +18,20 @@ export const validate = {
         body('content', '必须指定消息内容！').exists(),
         body('link_url').optional({ nullable: true }),
     ],
+    updateSendMsgToRoom: [
+        body('is_send_msg_to_room').notEmpty().exists().withMessage('关键字不能为空！'),
+    ],
 };
 export const sendMsgToRoom = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.json(res_data(null, -1, errors.errors[0].msg));
+    }
+    var where = {}
+    where.id = 1
+    var send_msg_to_room = await WechatSendMsgToRoom.findOne({ where });
+    if(!send_msg_to_room.is_send_msg_to_room){
+        return res.json(res_data(null, -1, "群发开关已关闭"));
     }
     var topic = req.body.group_name;
     if (typeof req.body.name_type != 'undefined' && req.body.name_type == 1) {
@@ -98,6 +108,37 @@ export const sendMsgToGroup = async (req, res, next) => {
             };
             pushJob(cb);
         }
+    }
+    return res.json(res_data());
+};
+export const findSendMsgToRoom = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.json(res_data(null, -1, errors.errors[0].msg));
+    }
+    var where = {}
+    where.id = 1
+    try {
+        var data = await WechatSendMsgToRoom.findOne({ where });
+    }
+    catch (error) {
+        return res.json(res_data(null, -1, error.toString()));
+    }
+    return res.json(res_data(data));
+};
+
+export const updateSendMsgToRoom = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.json(res_data(errors, -1, errors.errors[0].msg));
+    }
+    var where = {}
+    where.id = 1
+    try {
+        await WechatSendMsgToRoom.update({ ...req.body }, { where });
+    }
+    catch (error) {
+        return res.json(res_data(null, -1, error.toString()));
     }
     return res.json(res_data());
 };
