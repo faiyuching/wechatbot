@@ -37,7 +37,7 @@
       </el-table-column>
       <el-table-column label="群名" min-width="100px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleBind(row)">{{ row.name }}</span>
+          <span class="link-type">{{ row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="关联分馆" min-width="110px" align="left">
@@ -45,13 +45,13 @@
             <span>{{ row.Group ? row.Group.groupname : '' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="动作" align="center" width="180" class-name="small-padding fixed-width">
+      <!-- <el-table-column label="动作" align="center" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleBind(row)">
             绑定分馆
           </el-button>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
     <!-- 列表项 END -->
@@ -148,14 +148,14 @@ export default {
     hideView() {
       this.isBind = false
     },
-    handleBind(row) {
-      this.actionInfo = { 
-        room_id: row.id,
-        name: row.name,
-        groupid: row.Group ? row.Group.groupid : '',
-       }
-      this.isBind = true
-    },
+    // handleBind(row) {
+    //   this.actionInfo = { 
+    //     room_id: row.id,
+    //     name: row.name,
+    //     groupid: row.Group ? row.Group.groupid : '',
+    //    }
+    //   this.isBind = true
+    // },
   }
 }
 </script>
