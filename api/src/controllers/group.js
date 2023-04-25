@@ -223,12 +223,12 @@ export const listRoom = async (req, res, next) => {
         if(req.query.limit == 0){
             var items = await WechatRoom.findAll({
                 where,
-                include: Group
+                // include: Group
             });
         }else{
             var items = await WechatRoom.findAll({
                 where, limit, offset,
-                include: Group
+                // include: Group
             });
             var total = await WechatRoom.count({ where });
         }

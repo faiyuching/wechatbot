@@ -265,12 +265,12 @@ WechatRoomWelcome.belongsTo(WechatRoom, {
     foreignKey: 'room_ident',
     targetKey: 'room_ident',
 });
-Group.hasOne(WechatRoom, {
-    foreignKey: 'groupid',
-});
-WechatRoom.belongsTo(Group, {
-    foreignKey: 'groupid',
-});
+// Group.hasOne(WechatRoom, {
+//     foreignKey: 'groupid',
+// });
+// WechatRoom.belongsTo(Group, {
+//     foreignKey: 'groupid',
+// });
 /**
  * 文件表
  */
