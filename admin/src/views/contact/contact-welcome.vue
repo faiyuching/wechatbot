@@ -54,9 +54,12 @@ export default {
     this.loading = true
     fetchInformationList({limit:0}).then(res => {
       this.allInformations = res.data.items
-      res.data.items.forEach(item => {
-        if(item.is_friend_welcome){
-          this.temp.infoIds.push(item.id)
+      this.allInformations.forEach(info => {
+        if(info.is_friend_welcome){
+          this.temp.infoIds.push(info.id)
+        }
+        if(info.type == 3){
+          info.disabled = true
         }
       });
       this.loading = false
