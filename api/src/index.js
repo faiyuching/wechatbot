@@ -8,7 +8,7 @@ import start_app_server from "./api.js";
 
 const logger = new Logger().getInstance();
 const db = new DB().getInstance();
-const { redisCilent } = redis;
+// const { redisCilent } = redis;
 // 处理未捕获的Promise异常，一般是wechaty库的原因
 process.on('unhandledRejection', error => {
     console.error('unhandledRejection', error);
