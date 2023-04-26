@@ -26,7 +26,7 @@ async function getContactTextReply(that, contact, msg) {
     const id = contact.id;
     const avatar = await contact.avatar();
     const resArray = [
-        { bool: msg === '', method: 'emptyMsg' },
+        // { bool: msg === '', method: 'emptyMsg' },
         { bool: msg.includes(DELETEFRIEND) || WEIXINOFFICIAL.includes(name) || msg.length > 1000, method: 'officialMsg' },
         { bool: msg.includes(NEWADDFRIEND), method: 'newFriendMsg' },
         { bool: config.roomJoinKeywords && config.roomJoinKeywords.length > 0, method: 'roomInviteMsg' },
@@ -52,7 +52,7 @@ async function getContactTextReply(that, contact, msg) {
 async function getRoomTextReply(that, msg, name, id, avatar, room) {
     const config = await allConfig('group'); // 获取配置信息
     const resArray = [
-        { bool: msg === '', method: 'emptyMsg' },
+        // { bool: msg === '', method: 'emptyMsg' },
         { bool: config.eventKeywords && config.eventKeywords.length > 0, method: 'eventMsg' },
         { bool: true, method: 'keywordsMsg' },
     ];
