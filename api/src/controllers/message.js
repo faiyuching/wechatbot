@@ -23,6 +23,7 @@ export const validate = {
     ],
 };
 export const sendMsgToRoom = async (req, res, next) => {
+    console.log(req)
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.json(res_data(null, -1, errors.errors[0].msg));
