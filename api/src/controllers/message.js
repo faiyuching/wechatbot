@@ -23,11 +23,12 @@ export const validate = {
     ],
 };
 export const sendMsgToRoom = async (req, res, next) => {
-    console.log(req)
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log("error")
         return res.json(res_data(null, -1, errors.errors[0].msg));
     }
+    console.log(1)
     var where = {}
     where.id = 1
     var send_msg_to_room = await WechatSendMsgToRoom.findOne({ where });
