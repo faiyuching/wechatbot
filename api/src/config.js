@@ -36,10 +36,10 @@ export default {
     DB_HOSTPORT: process.env.DB_HOSTPORT,
     DB_CHARSET: process.env.DB_CHARSET,
 
-    REDIS_HOST: process.env.REDIS_HOST,
-    REDIS_PORT: process.env.REDIS_PORT,
-    REDIS_PASSWORD: process.env.REDIS_PASSWORD,
-    REDIS_DB: process.env.REDIS_DB,
+    // REDIS_HOST: process.env.REDIS_HOST,
+    // REDIS_PORT: process.env.REDIS_PORT,
+    // REDIS_PASSWORD: process.env.REDIS_PASSWORD,
+    // REDIS_DB: process.env.REDIS_DB,
 
     YIDI_USERNAME: process.env.YIDI_USERNAME,
     YIDI_PASSWORD: process.env.YIDI_PASSWORD,

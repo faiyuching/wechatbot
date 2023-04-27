@@ -2,7 +2,7 @@ import Bot from "../bot.js";
 import memoryCache from "../util/memoryCache.js";
 import { res_data, downloadAvatar } from "../util/server.js";
 import * as QRcode from "qrcode";
-import { redisClient } from "../util/redis.js";
+// import { redisClient } from "../util/redis.js";
 const { get } = memoryCache;
 
 export const self = async (req, res, next) => {
@@ -27,10 +27,10 @@ export const qrcode = async (req, res, next) => {
     return res.json(res_data({ url }));
 };
 
-export const clearRedisCache = async (req, res, next) => {
-    await redisClient.clearCache();
-    return res.json(res_data());
-};
+// export const clearRedisCache = async (req, res, next) => {
+//     await redisClient.clearCache();
+//     return res.json(res_data());
+// };
 
 export const contactList = async (req, res, next) => {
     var contacts = await Bot.getInstance().Contact.findAll();

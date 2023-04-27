@@ -11,5 +11,5 @@ router.get('/roomAnnounce', wechatController.roomAnnounce);
 router.get('/roomMemberAll', wechatController.roomMemberAll);
 router.get('/loginStatus', auth.required, wechatController.loginStatus);
 router.get('/qrcode', auth.required, wechatController.qrcode);
-router.post('/clearRedisCache', auth.required, wechatController.clearRedisCache);
+// router.post('/clearRedisCache', auth.required, wechatController.clearRedisCache);
 export default router;

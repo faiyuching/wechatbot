@@ -1,7 +1,7 @@
 import { FileBox } from 'file-box';
 import { WechatKeyword, WechatRoom } from "../models/wechat-common.js";
 import { pushJob } from "../util/queue.js";
-import { redisClient } from "../util/redis.js";
+// import { redisClient } from "../util/redis.js";
 import Bot from '../bot.js';
 
 /**
@@ -9,7 +9,7 @@ import Bot from '../bot.js';
  */
 async function allConfig(scope = 'all') {
     var key = `wechatbot:keywords-${scope}`;
-    var res = await redisClient.get(key);
+    // var res = await redisClient.get(key);
     if (res)
         return JSON.parse(res);
     var keywords = await WechatKeyword.findAll({
@@ -35,7 +35,7 @@ async function allConfig(scope = 'all') {
         eventKeywords,
         replyKeywords,
     };
-    await redisClient.set(key, JSON.stringify(res), 'EX', 60 * 60);
+    // await redisClient.set(key, JSON.stringify(res), 'EX', 60 * 60);
     return res;
 }
 /**

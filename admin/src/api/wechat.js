@@ -15,10 +15,10 @@ export function loginStatus() {
 }
 
 
-export function clearRedisCache() {
-  return request({
-    url: '/wechat/clearRedisCache',
-    method: 'post',
-  })
-}
+// export function clearRedisCache() {
+//   return request({
+//     url: '/wechat/clearRedisCache',
+//     method: 'post',
+//   })
+// }
 
