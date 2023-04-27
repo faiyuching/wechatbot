@@ -30,7 +30,7 @@ async function allConfig(scope = 'all') {
     var replyKeywords = keywords
         .filter(item => item.type === 1)
         .filter(filter);
-    res = {
+    var res = {
         roomJoinKeywords,
         eventKeywords,
         replyKeywords,
