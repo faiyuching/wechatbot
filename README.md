@@ -24,13 +24,13 @@ $ cd api
 $ docker build -t bot:1.0.0 .
 
 # 推送镜像到阿里云
-$ docker login --username=<用户名> registry.cn-guangzhou.aliyuncs.com
-$ docker tag bot:1.0.0 registry.cn-guangzhou.aliyuncs.com/<用户名>/bot:1.0.0
-$ docker push registry.cn-guangzhou.aliyuncs.com/<用户名>/bot:1.0.0
+$ docker login --username=<用户名> registry.cn-hangzhou.aliyuncs.com
+$ docker tag bot:1.0.0 registry.cn-hangzhou.aliyuncs.com/wavelib/wechatbot:1.0.0
+$ docker push registry.cn-hangzhou.aliyuncs.com/wavelib/wechatbot:1.0.0
 
 # 在服务器上拉取
-$ docker login --username=<用户名> registry.cn-guangzhou.aliyuncs.com
-$ docker pull registry.cn-guangzhou.aliyuncs.com/<用户名>/bot:1.0.0
+$ docker login --username=<用户名> registry.cn-hangzhou.aliyuncs.com
+$ docker pull registry.cn-hangzhou.aliyuncs.com/wavelib/wechatbot:1.0.0
 
 # 拉取完毕后运行镜像
 $ cd <项目目录>/api
