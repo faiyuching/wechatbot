@@ -43,7 +43,7 @@ $ docker run \
     -v $(pwd):/bot \
     --name bot \
     --add-host host.docker.internal:host-gateway \
-    registry.cn-guangzhou.aliyuncs.com/<用户名>/bot:1.0.0
+    registry.cn-hangzhou.aliyuncs.com/wavelib/wechatbot:1.0.0
 $ docker logs -f bot # 查看日志即可扫码
 # 后续更新只需要重新git拉取代码，然后重启容器即可   
 
