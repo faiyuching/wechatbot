@@ -8,10 +8,10 @@ import Bot from '../bot.js';
  * 配置项 Mock
  */
 async function allConfig(scope = 'all') {
-    var key = `wechatbot:keywords-${scope}`;
+    // var key = `wechatbot:keywords-${scope}`;
     // var res = await redisClient.get(key);
-    if (res)
-        return JSON.parse(res);
+    // if (res)
+    //     return JSON.parse(res);
     var keywords = await WechatKeyword.findAll({
         where: { status: 1 }
     });
