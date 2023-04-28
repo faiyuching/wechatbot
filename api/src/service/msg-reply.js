@@ -1,5 +1,6 @@
 import { allConfig } from "./index.js";
 import msgFilter from "./msg-filters.js";
+import language from 'jian_fan';
 const WEIXINOFFICIAL = ['朋友推荐消息', '微信支付', '微信运动', '微信团队', 'recommendation message']; // 微信官方账户，针对此账户不做任何回复
 const DELETEFRIEND = '开启了朋友验证'; // 被人删除后，防止重复回复
 const REMINDKEY = '提醒';
@@ -21,6 +22,7 @@ async function getMsgReply(resArray, { that, msg, name, contact, config, avatar,
  * 获取私聊返回内容
  */
 async function getContactTextReply(that, contact, msg) {
+    msg = language.simplified(msg);
     const config = await allConfig('personal'); // 获取配置信息
     const name = contact.name();
     const id = contact.id;
