@@ -156,7 +156,7 @@ function isRealDate(str) {
  * @returns 例：2019-9-10 13:13:04
  */
 function timestampToDate(date) {
-    var tempDate = new Date(date);
+    var tempDate = new Date(date * 1000);
     var year = tempDate.getFullYear();
     var month = tempDate.getMonth() + 1;
     var day = tempDate.getDate();

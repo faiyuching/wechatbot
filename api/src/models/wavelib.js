@@ -62,6 +62,10 @@ const UserInfo = db.define('UserInfo', {
         type: DataTypes.INTEGER,
         defaultValue: 1,
     },
+    addtime: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
 }, {
     tableName: 'user_info',
     timestamps: false
@@ -105,11 +109,44 @@ UserInfo.belongsTo(User, {
     targetName: 'userid',
     foreignKey: 'userid'
 });
+
+/**
+  * 微澜社区分馆用户模型
+  */
+const GroupUser = db.define('GroupUser', {
+    userid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true
+    },
+    groupid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    grouptype: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    isvo: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    addtime: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+}, {
+    tableName: 'group_user',
+    timestamps: false,
+});
+
 export { Group };
 export { User };
 export { UserInfo };
+export { GroupUser };
 export default {
     Group,
     User,
-    UserInfo
+    UserInfo,
+    GroupUser
 };
