@@ -140,13 +140,75 @@ const GroupUser = db.define('GroupUser', {
     timestamps: false,
 });
 
+const UserApply = db.define('UserApply', {
+    applyid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true
+    },
+    userid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    groupid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    type: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    score: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+    },
+    addtime: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    status: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+}, {
+    tableName: 'user_apply',
+    timestamps: false
+});
+
+const Weibo = db.define('Weibo', {
+    weiboid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true
+    },
+    userid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    addtime: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    content: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+}, {
+    tableName: 'weibo',
+    timestamps: false
+});
+
 export { Group };
 export { User };
 export { UserInfo };
 export { GroupUser };
+export { UserApply };
+export { Weibo };
 export default {
     Group,
     User,
     UserInfo,
-    GroupUser
+    GroupUser,
+    UserApply,
+    Weibo
 };

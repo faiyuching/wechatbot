@@ -1,7 +1,7 @@
 import Bot from "../bot.js";
 import * as expressValidator from "express-validator";
 import { res_data } from "../util/server.js";
-import { UserInfo, Group, GroupUser } from "../models/wavelib.js";
+import { UserInfo, Group, GroupUser, UserApply } from "../models/wavelib.js";
 import { roomSay } from "../service/index.js";
 import { Op } from "sequelize";
 import { processKeyword } from "../util/wechat.js";
@@ -19,19 +19,19 @@ export const getJinshujuScore = async (req, res, next) => {
     if (!errors.isEmpty()) {
         return res.json(res_data(errors, -1, errors.errors[0].msg));
     }
-    var phone = req.body.field_87;
-    var user = await UserInfo.findAll({
+    let phone = req.body.field_87;
+    let user = await UserInfo.findAll({
         where: { phone }
     });
-    var userid = 0
-    var groupid = 0
-    var addtime = 0
+    let userid = 0
+    let groupid = 0
+    let addtime = 0
     for( let i = 0; i < user.length; i++){
-        var where = {}
+        let where = {}
         where.userid = user[i].userid
         where.grouptype = 2
         where.isvo = 1
-        var group_user = await GroupUser.findAll({ where, order: [['addtime', 'DESC']] })
+        let group_user = await GroupUser.findAll({ where, order: [['addtime', 'DESC']] })
         if(group_user.length != 0){
             if( group_user[0].addtime > addtime){
                 userid = group_user[0].userid
@@ -40,15 +40,29 @@ export const getJinshujuScore = async (req, res, next) => {
         }
     }
     if(userid != 0 && groupid != 0){
-        var user = await UserInfo.findOne({ where: { userid } })
-        var group = await Group.findOne({ where: { groupid } })
+        let user = await UserInfo.findOne({ where: { userid } })
+        let group = await Group.findOne({ where: { groupid } })
         if(req.body.exam_score >= 80){
             try {
+                // 更新user_info表
                 await UserInfo.update({ 
                     testtime: req.body.created_at,
                     renzhengtime: req.body.created_at,
-                    isrenzheng: 1
+                    isrenzheng: 1,
                 }, { where: { userid } });
+                if(user.grade == 0){
+                    await UserInfo.update({ grade: 1,}, { where: { userid } });
+                }
+                // 插入user_apply表
+                await UserApply.create({
+                    userid: userid,
+                    groupid: groupid,
+                    type: 1,
+                    score: req.body.exam_score,
+                    addtime: req.body.created_at,
+                    status: 1
+                })
+                // 向”微澜图书馆候选馆员群“推送图文消息
                 let room = await Bot.getInstance().Room.find({ topic: "微澜图书馆候选馆员群" })
                 let link = {
                     type: 4,
@@ -58,6 +72,22 @@ export const getJinshujuScore = async (req, res, next) => {
                     description: "ta是" + timestampToDate(user.addtime) + "报名的。没完成的小伙伴们请加油。",
                 };
                 await roomSay(room, null, link);
+                // 向分馆工作群推送群消息
+                room = await Bot.getInstance().Room.find({ topic: "微澜" + group.groupname + "工作群" })
+                link = {
+                    type: 4,
+                    url: "http://park.sanzhi.org.cn/index.php?app=user&ac=duty&id=" + userid,
+                    content: user.username + "通过考试成为候任馆员，即将进群，请准备欢迎！",
+                    thumbnailUrl: "http://park.sanzhi.org.cn/uploadfile/user/" + user.face,
+                    description: "等新人入群后，相关理事注意备注实名，以便识别",
+                };
+                await roomSay(room, null, link);
+                // 在社区添加一条微博
+                await UserApply.create({
+                    userid: userid,
+                    content: "通过了馆员资格考试，取得了馆员资格！",
+                    addtime: req.body.created_at,
+                })
             }
             catch (error) {
                 return res.json(res_data(null, -1, error.toString()));
