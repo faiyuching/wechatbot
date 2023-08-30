@@ -143,8 +143,8 @@ const GroupUser = db.define('GroupUser', {
 const UserApply = db.define('UserApply', {
     applyid: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true,
     },
     userid: {
         type: DataTypes.INTEGER,
@@ -178,8 +178,8 @@ const UserApply = db.define('UserApply', {
 const Weibo = db.define('Weibo', {
     weiboid: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true,
     },
     userid: {
         type: DataTypes.INTEGER,
