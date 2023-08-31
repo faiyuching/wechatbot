@@ -66,6 +66,22 @@ const UserInfo = db.define('UserInfo', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
+    testtime: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    renzhengtime: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    isrenzheng: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    grade: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
 }, {
     tableName: 'user_info',
     timestamps: false

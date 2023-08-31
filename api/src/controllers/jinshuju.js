@@ -52,10 +52,12 @@ export const getJinshujuScore = async (req, res, next) => {
                     testtime: create_time,
                     renzhengtime: create_time,
                     isrenzheng: 1,
-                }, { where: { userid } });
+                }, { where: { userid} });
                 if(user.grade == 0){
+                    console.log(3)
                     await UserInfo.update({ grade: 1,}, { where: { userid } });
                 }
+
                 // 插入user_apply表
                 await UserApply.create({
                     userid: userid,
@@ -65,6 +67,14 @@ export const getJinshujuScore = async (req, res, next) => {
                     addtime: create_time,
                     status: 1
                 })
+
+                // 在社区添加一条微博
+                await Weibo.create({
+                    userid: userid,
+                    content: "通过了馆员资格考试，取得了馆员资格！",
+                    addtime: create_time,
+                })
+
                 // 向”微澜图书馆候选馆员群“推送图文消息
                 let room = await Bot.getInstance().Room.find({ topic: "微澜图书馆候选馆员群" })
                 let link = {
@@ -75,6 +85,7 @@ export const getJinshujuScore = async (req, res, next) => {
                     description: "ta是" + timestampToDate(user.addtime) + "报名的。没完成的小伙伴们请加油。",
                 };
                 await roomSay(room, null, link);
+
                 // 向分馆工作群推送群消息
                 room = await Bot.getInstance().Room.find({ topic: "微澜" + group.groupname + "工作群" })
                 link = {
@@ -85,17 +96,10 @@ export const getJinshujuScore = async (req, res, next) => {
                     description: "等新人入群后，相关理事注意备注实名，以便识别",
                 };
                 await roomSay(room, null, link);
-                // 在社区添加一条微博
-                await Weibo.create({
-                    userid: userid,
-                    content: "通过了馆员资格考试，取得了馆员资格！",
-                    addtime: create_time,
-                })
             }
             catch (error) {
                 return res.json(res_data(null, -1, error.toString()));
             }
-
         }else{
             try {
                 await UserInfo.update({ testtime: create_time }, { where: { userid } });
