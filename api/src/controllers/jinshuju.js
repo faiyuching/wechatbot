@@ -102,16 +102,18 @@ export const getJinshujuScore = async (req, res, next) => {
             }
         }else{
             try {
-                await UserInfo.update({ testtime: create_time }, { where: { userid } });
-                let room = await Bot.getInstance().Room.find({ topic: "微澜图书馆候选馆员群" })
-                let link = {
-                    type: 4,
-                    url: "https://shimo.im/docs/fatOK9bmivgLQwuL",
-                    content: user.username + "开始参加馆员上岗资格考试了",
-                    thumbnailUrl: "http://park.sanzhi.org.cn/uploadfile/user/" + user.face,
-                    description: "ta是" + timestampToDate(user.addtime) + "报名的，祝ta顺利完成。没考的小伙伴们请加油。",
-                };
-                await roomSay(room, null, link);
+                if(user.testtime == 0){
+                    await UserInfo.update({ testtime: create_time }, { where: { userid } });
+                    let room = await Bot.getInstance().Room.find({ topic: "微澜图书馆候选馆员群" })
+                    let link = {
+                        type: 4,
+                        url: "https://shimo.im/docs/fatOK9bmivgLQwuL",
+                        content: user.username + "开始参加馆员上岗资格考试了",
+                        thumbnailUrl: "http://park.sanzhi.org.cn/uploadfile/user/" + user.face,
+                        description: "ta是" + timestampToDate(user.addtime) + "报名的，祝ta顺利完成。没考的小伙伴们请加油。",
+                    };
+                    await roomSay(room, null, link);
+                }
             }
             catch (error) {
                 return res.json(res_data(null, -1, error.toString()));
