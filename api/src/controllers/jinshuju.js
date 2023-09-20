@@ -33,7 +33,7 @@ export const getJinshujuScore = async (req, res, next) => {
         let where = {}
         where.userid = user[i].userid
         where.grouptype = 2
-        where.isvo = 1
+        where.isvo != 0
         let group_user = await GroupUser.findAll({ where, order: [['addtime', 'DESC']] })
         if(group_user.length != 0){
             if( group_user[0].addtime > addtime){
